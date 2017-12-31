@@ -3,7 +3,7 @@
 
 <head>
 		<title>D3 Test</title>
-		<script src="d3/d3.v4.js"></script>
+		<script src="../d3/d3.v4.js"></script>
 </head>
 
 <body>
@@ -32,37 +32,42 @@
                         .attr("r", startRadius)
                         .attr("fill", "orange");
 
-    //Move one circle up one full circle radius
-    circle1.transition()
-        .duration(1500)   //measured in Mili Seconds
-        .attr("cy", 150);
 
-    //then move the other circle up 2 full radius
-    circle2.transition()
-        .duration(1500)
-        .attr("cy", 200);
-    
-    //Swap circles positions
-    circle1.transition()
-      .delay(moveDuration)
-      .duration(moveDuration)
-      .attr("cx", circle2.attr("cx"));
 
-    circle2.transition()
-      .delay(moveDuration)
-      .duration(moveDuration)
-      .attr("cx", circle1.attr("cx"));
+  
+    function swapPlaces(circle1, circle2){
+      //Move one circle up one full circle radius
+      circle1.transition()
+          .duration(1500)   //measured in Mili Seconds
+          .attr("cy", 150);
 
-    //Move back to original line
-    circle1.transition()
-      .delay(2*moveDuration)
-      .duration(moveDuration)
-      .attr("cy", startYCord);
+      //then move the other circle up 2 full radius
+      circle2.transition()
+          .duration(1500)
+          .attr("cy", 200);
+      
+      //Swap circles positions
+      circle1.transition()
+        .delay(moveDuration)
+        .duration(moveDuration)
+        .attr("cx", circle2.attr("cx"));
 
-    circle2.transition()
-      .delay(2*moveDuration)
-      .duration(moveDuration)
-      .attr("cy", startYCord);
+      circle2.transition()
+        .delay(moveDuration)
+        .duration(moveDuration)
+        .attr("cx", circle1.attr("cx"));
+
+      //Move back to original line
+      circle1.transition()
+        .delay(2*moveDuration)
+        .duration(moveDuration)
+        .attr("cy", startYCord);
+
+      circle2.transition()
+        .delay(2*moveDuration)
+        .duration(moveDuration)
+        .attr("cy", startYCord);
+    }
 
   </script>
 
