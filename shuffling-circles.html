@@ -3,7 +3,7 @@
 
 <head>
 		<title>D3 Test</title>
-		<script src="../d3/d3.v4.js"></script>
+		<script src="d3.v4.js"></script>
 </head>
 
 <body>
@@ -20,53 +20,66 @@
             .attr("height", 500);
 
     //drawl 2 circles
-    var circle1 = canvas.append("circle")
+    let Homecircle1 = canvas.append("circle")
                         .attr("cx", startXCord)
                         .attr("cy", startYCord)
                         .attr("r", startRadius)
                         .attr("fill", "blue");
     
-    var circle2 = canvas.append("circle")
+    let Homecircle2 = canvas.append("circle")
                         .attr("cx", startXCord+ (2*startRadius))
                         .attr("cy", startYCord)
                         .attr("r", startRadius)
                         .attr("fill", "orange");
 
-
+    let animationTimeDuration = swapPlaces(Homecircle1, Homecircle2, 0);
+    //TODO add timeout here instead of passing it as a var
+    swapPlaces(Homecircle1, Homecircle2, animationTimeDuration);
 
   
-    function swapPlaces(circle1, circle2){
+    //animationStartTime = the time in which previous animations have ended 
+    function swapPlaces(circle1, circle2, animationStartTime){
+      console.log("swap called");
+      // The displaced y position where cirlce1's swaps will occure
+      let stagingYCord1 = 150;
+      // The displaced y position where circle2's swaps will occure
+      let stagingYCord2 = 150 + (2*startRadius);
+
       //Move one circle up one full circle radius
       circle1.transition()
-          .duration(1500)   //measured in Mili Seconds
-          .attr("cy", 150);
+          .delay(animationStartTime)
+          .duration(moveDuration)   //measured in Mili Seconds
+          .attr("cy", stagingYCord1);
 
-      //then move the other circle up 2 full radius
+      //Move the other circle up 2 full radius
       circle2.transition()
-          .duration(1500)
-          .attr("cy", 200);
+          .delay(animationStartTime)
+          .duration(moveDuration)
+          .attr("cy", stagingYCord2);
       
-      //Swap circles positions
+      //Swap circles' x positions
       circle1.transition()
-        .delay(moveDuration)
+        .delay(animationStartTime + moveDuration)
         .duration(moveDuration)
         .attr("cx", circle2.attr("cx"));
 
       circle2.transition()
-        .delay(moveDuration)
+        .delay(animationStartTime + moveDuration)
         .duration(moveDuration)
         .attr("cx", circle1.attr("cx"));
 
       //Move back to original line
       circle1.transition()
-        .delay(2*moveDuration)
+        .delay(animationStartTime + 2*moveDuration)
         .duration(moveDuration)
         .attr("cy", startYCord);
 
       circle2.transition()
-        .delay(2*moveDuration)
+        .delay(animationStartTime + 2*moveDuration)
         .duration(moveDuration)
         .attr("cy", startYCord);
+
+      return 3*moveDuration;
     }
 
   </script>
