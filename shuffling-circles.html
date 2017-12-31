@@ -20,6 +20,7 @@
             .attr("height", 500);
 
     //drawl 2 circles
+    // TODO: Add text with value for circle (or do radius size)
     let Homecircle1 = canvas.append("circle")
                         .attr("cx", startXCord)
                         .attr("cy", startYCord)
@@ -32,10 +33,10 @@
                         .attr("r", startRadius)
                         .attr("fill", "orange");
 
-    let animationTimeDuration = swapPlaces(Homecircle1, Homecircle2, 0);
+    // let animationTimeDuration = swapPlaces(Homecircle1, Homecircle2, 0);
     //TODO add timeout here instead of passing it as a var
-    swapPlaces(Homecircle1, Homecircle2, animationTimeDuration);
-
+    // swapPlaces(Homecircle1, Homecircle2, animationTimeDuration);
+    GetBubbleSortMoves();
   
     //animationStartTime = the time in which previous animations have ended 
     function swapPlaces(circle1, circle2, animationStartTime){
@@ -80,6 +81,39 @@
         .attr("cy", startYCord);
 
       return 3*moveDuration;
+    }
+
+    //return a list of all swap pairs needed for the list to become sorted
+    // TODO: this might be insertion sort
+    function GetBubbleSortMoves(){
+      //Generate random array of ints between 1-20
+      let sizeArray = [];
+      for(let i=0; i<10; i++){
+        let newNum = Math.floor(Math.random() * 20);
+        
+        sizeArray.push(newNum);
+      }
+
+      console.log(sizeArray);
+
+      // TODO: handle this off by 1 weirdness
+      for(let i=0; i<sizeArray.length-1; i++){
+        let curNum = sizeArray[i];
+        for(let j=i+1; j<sizeArray.length; j++){
+          let nextNum = sizeArray[j];
+          //Test if next number is smaller than current number
+          if(nextNum < curNum ){
+            //swap
+            sizeArray[i] = nextNum;
+            sizeArray[j] = curNum;
+            
+            //update the cur number 
+            curNum = nextNum;
+          }
+        }
+      }
+
+      console.log(sizeArray);
     }
 
   </script>
