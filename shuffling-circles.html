@@ -17,13 +17,13 @@
     //build canvas
     var canvas = d3.select("body")
             .append("svg")
-            .attr("width", 500)
+            .attr("width", 1000)
             .attr("height", 500);
 
     //drawl 2 circles
     // TODO: Add text with value for circle (or do radius size)
 
-    for(let i=0; i<5; i++){
+    for(let i=0; i<10; i++){
       let circleEle = createCircleEle(i);
       circleList.push(circleEle);
     }
@@ -34,12 +34,10 @@
     getInsertionSortMoves(weightsArray);
     getBubbleSortMoves(weightsArray);
 
-    // animationLoop(circleEle1, circleEle2, 0);
+    animationLoop(circleList[0], circleList[2], 0);
 
     //Creates a circle element in a line along the designated x axis
     function createCircleEle(eleStartIndex){
-      // let color = d3.scale.category20();
-
       let circleEle = canvas.append("circle")
                         .attr("cx", startXCord + (eleStartIndex*2*startRadius))
                         .attr("cy", startYCord)
@@ -58,10 +56,16 @@
     function animationLoop(circle1, circle2, swapIndex){
       let animationTimeDuration = swapPlaces(circle1, circle2, 0);
 
-      if(swapIndex < 3){
+      if(swapIndex < 6){
         setTimeout(function(){
           console.log('swap #' + swapIndex);
-          animationLoop(circle2, circle1, swapIndex+1);
+          circle1Index = Math.floor(Math.random() * circleList.length);
+          do{
+            circle2Index = Math.floor(Math.random() * circleList.length);
+          } 
+          while(circle2Index==circle1Index);
+          console.log('swapping ' + circle1Index + ' with ' + circle2Index);
+          animationLoop(circleList[circle1Index], circleList[circle2Index], swapIndex+1);
         }, animationTimeDuration);
       }
       
