@@ -33,10 +33,15 @@
                         .attr("r", startRadius)
                         .attr("fill", "orange");
 
+    //Generate the weights array then pass it to the workers
+    let weightsArray = generateRandomArrayWeights();
+    console.log(weightsArray);
+    getInsertionSortMoves(weightsArray);
+    getBubbleSortMoves(weightsArray);
+
     // let animationTimeDuration = swapPlaces(Homecircle1, Homecircle2, 0);
     //TODO add timeout here instead of passing it as a var
     // swapPlaces(Homecircle1, Homecircle2, animationTimeDuration);
-    GetBubbleSortMoves();
   
     //animationStartTime = the time in which previous animations have ended 
     function swapPlaces(circle1, circle2, animationStartTime){
@@ -83,37 +88,55 @@
       return 3*moveDuration;
     }
 
-    //return a list of all swap pairs needed for the list to become sorted
-    // TODO: this might be insertion sort
-    function GetBubbleSortMoves(){
+    function generateRandomArrayWeights(){
       //Generate random array of ints between 1-20
-      let sizeArray = [];
+      let weightsArray = [];
       for(let i=0; i<10; i++){
         let newNum = Math.floor(Math.random() * 20);
         
-        sizeArray.push(newNum);
+        weightsArray.push(newNum);
       }
 
-      console.log(sizeArray);
+      return weightsArray;
+    }
+
+    //return a list of all swap pairs needed for the list to become sorted
+    // TODO: this might be insertion sort
+    function getInsertionSortMoves(weightsArray){
+      //Records the pairs of indexs that are swapped
+      let movesArray = [];
 
       // TODO: handle this off by 1 weirdness
-      for(let i=0; i<sizeArray.length-1; i++){
-        let curNum = sizeArray[i];
-        for(let j=i+1; j<sizeArray.length; j++){
-          let nextNum = sizeArray[j];
+      for(let i=0; i<weightsArray.length-1; i++){
+        let curNum = weightsArray[i];
+        for(let j=i+1; j<weightsArray.length; j++){
+          let nextNum = weightsArray[j];
           //Test if next number is smaller than current number
           if(nextNum < curNum ){
             //swap
-            sizeArray[i] = nextNum;
-            sizeArray[j] = curNum;
+            weightsArray[i] = nextNum;
+            weightsArray[j] = curNum;
             
             //update the cur number 
             curNum = nextNum;
+
+            //Record the swapped positions
+            let swappedIndices = [i, j];
+            movesArray.push(swappedIndices);
           }
         }
       }
 
-      console.log(sizeArray);
+      console.log(weightsArray);
+      console.log(movesArray);
+      return movesArray;
+    }
+
+    function getBubbleSortMoves(weightsArray){
+      for(let i=0; i<weightsArray.length; i++){
+        let curNum = weightsArray[i];
+        // for
+      }
     }
 
   </script>
