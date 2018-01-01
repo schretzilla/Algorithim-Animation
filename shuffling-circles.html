@@ -21,13 +21,13 @@
 
     //drawl 2 circles
     // TODO: Add text with value for circle (or do radius size)
-    let Homecircle1 = canvas.append("circle")
+    let circleEle1 = canvas.append("circle")
                         .attr("cx", startXCord)
                         .attr("cy", startYCord)
                         .attr("r", startRadius)
                         .attr("fill", "blue");
     
-    let Homecircle2 = canvas.append("circle")
+    let circleEle2 = canvas.append("circle")
                         .attr("cx", startXCord+ (2*startRadius))
                         .attr("cy", startYCord)
                         .attr("r", startRadius)
@@ -39,30 +39,23 @@
     getInsertionSortMoves(weightsArray);
     getBubbleSortMoves(weightsArray);
 
-    // let animationTimeDuration = swapPlaces(Homecircle1, Homecircle2, 0);
 
-    // setTimeout(function(){
-    //   console.log('Second swap');
-    //   swapPlaces(Homecircle1, Homecircle2, animationTimeDuration);
-    // }, animationTimeDuration);
+    animationLoop(circleEle1, circleEle2, 0);
 
-    animationLoop(Homecircle1, Homecircle2, 0);
-    
+    //swapIndex, ending function for the recurrsion
     function animationLoop(circle1, circle2, swapIndex){
       let animationTimeDuration = swapPlaces(circle1, circle2, 0);
 
       if(swapIndex < 3){
         setTimeout(function(){
-          console.log(swapIndex + 'next swap');
-          // swapPlaces(Homecircle1, Homecircle2, animationTimeDuration);
+          console.log('swap #' + swapIndex);
           animationLoop(circle2, circle1, swapIndex+1);
         }, animationTimeDuration);
       }
       
     }
 
-    //animationStartTime = the time in which previous animations have ended 
-    function swapPlaces(circle1, circle2, animationStartTime){
+    function swapPlaces(circle1, circle2){
       console.log("swap called");
       // The displaced y position where cirlce1's swaps will occure
       let stagingYCord1 = 150;
