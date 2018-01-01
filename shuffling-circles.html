@@ -11,8 +11,8 @@
     //global vars
     let startYCord = 100;
     let startXCord = 50;
-    let startRadius = 25;
-    let moveDuration = 1500;
+    let startRadius = 70;
+    let moveDuration = 500;
     let circleList = [];
     //build canvas
     var canvas = d3.select("body")
@@ -20,63 +20,82 @@
             .attr("width", 1000)
             .attr("height", 500);
 
-    //drawl 2 circles
     // TODO: Add text with value for circle (or do radius size)
+    let weightsArray = generateRandomArrayWeights();
 
     for(let i=0; i<10; i++){
-      let circleEle = createCircleEle(i);
+      let circleSize = weightsArray[i];
+      let circleEle = createCircleEle(i, circleSize);
       circleList.push(circleEle);
     }
 
     //Generate the weights array then pass it to the workers
-    let weightsArray = generateRandomArrayWeights();
     console.log(weightsArray);
-    getInsertionSortMoves(weightsArray);
+    let insertionSortMoves = getInsertionSortMoves(weightsArray);
     getBubbleSortMoves(weightsArray);
 
-    animationLoop(circleList[0], circleList[2], 0);
+    console.log("insertion moves" + insertionSortMoves);
+    
+    //Kick off the animation
+    animate(insertionSortMoves);
 
     //Creates a circle element in a line along the designated x axis
-    function createCircleEle(eleStartIndex){
+    function createCircleEle(eleStartIndex, circleSize){
       let circleEle = canvas.append("circle")
-                        .attr("cx", startXCord + (eleStartIndex*2*startRadius))
+                        .attr("cx", startXCord + (eleStartIndex*startRadius))
                         .attr("cy", startYCord)
-                        .attr("r", startRadius)
+                        .attr("r", circleSize)
                         .attr("fill", getRandomColor);
 
       return circleEle;
     }
+    
+    function animate(swapList){
+      let currentMoves = swapList[0];
+      let circle1Index = currentMoves[0];
+      let circle2Index = currentMoves[1];
+      let circle1 = circleList[circle1Index];
+      let circle2 = circleList[circle2Index];
+      
+      //Update the circleslist
+      circleList[circle1Index] = circle2;
+      circleList[circle2Index] = circle1;
 
-    //Adds random fill color to an svg attribute
-    function getRandomColor(){
-      return "hsl(" + Math.random() * 360 + ",100%,50%)"
+      animationLoop(circle1, circle2, 1, swapList);
+
     }
 
     //swapIndex, ending function for the recurrsion
-    function animationLoop(circle1, circle2, swapIndex){
+    function animationLoop(circle1, circle2, swapIndex, swapList){
       let animationTimeDuration = swapPlaces(circle1, circle2, 0);
 
-      if(swapIndex < 6){
+      if(swapIndex < swapList.length){
         setTimeout(function(){
           console.log('swap #' + swapIndex);
-          circle1Index = Math.floor(Math.random() * circleList.length);
-          do{
-            circle2Index = Math.floor(Math.random() * circleList.length);
-          } 
-          while(circle2Index==circle1Index);
+          let currentMoves = swapList[swapIndex];
+          let circle1Index = currentMoves[0];
+          let circle2Index = currentMoves[1];
+          let circle1 = circleList[circle1Index];
+          let circle2 = circleList[circle2Index];
+
+          //Update the circleslist
+          circleList[circle1Index] = circle2;
+          circleList[circle2Index] = circle1;
+
           console.log('swapping ' + circle1Index + ' with ' + circle2Index);
-          animationLoop(circleList[circle1Index], circleList[circle2Index], swapIndex+1);
+          animationLoop(circleList[circle1Index], circleList[circle2Index], swapIndex+1, swapList);
         }, animationTimeDuration);
       }
       
     }
 
+    //Swap the position of the two circle elements
     function swapPlaces(circle1, circle2){
       console.log("swap called");
       // The displaced y position where cirlce1's swaps will occure
-      let stagingYCord1 = 150;
+      let stagingYCord1 = 200;
       // The displaced y position where circle2's swaps will occure
-      let stagingYCord2 = 150 + (2*startRadius);
+      let stagingYCord2 = 200 + (2*startRadius);
 
       //Move one circle up one full circle radius
       circle1.transition()
@@ -113,12 +132,12 @@
       return 3*moveDuration;
     }
 
+    //Generate random array of ints between 1-10
     function generateRandomArrayWeights(){
-      //Generate random array of ints between 1-20
       let weightsArray = [];
       for(let i=0; i<10; i++){
-        let newNum = Math.floor(Math.random() * 20);
-        
+        let newNum = Math.floor(Math.random() * 10) + 10;
+        newNum = newNum * 2;
         weightsArray.push(newNum);
       }
 
@@ -162,6 +181,11 @@
         let curNum = weightsArray[i];
         // for
       }
+    }
+
+    //Adds random fill color to an svg attribute
+    function getRandomColor(){
+      return "hsl(" + Math.random() * 360 + ",100%,50%)"
     }
 
   </script>
