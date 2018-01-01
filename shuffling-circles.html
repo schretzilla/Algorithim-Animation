@@ -13,6 +13,7 @@
     let startXCord = 50;
     let startRadius = 25;
     let moveDuration = 1500;
+    let circleList = [];
     //build canvas
     var canvas = d3.select("body")
             .append("svg")
@@ -21,17 +22,11 @@
 
     //drawl 2 circles
     // TODO: Add text with value for circle (or do radius size)
-    let circleEle1 = canvas.append("circle")
-                        .attr("cx", startXCord)
-                        .attr("cy", startYCord)
-                        .attr("r", startRadius)
-                        .attr("fill", "blue");
-    
-    let circleEle2 = canvas.append("circle")
-                        .attr("cx", startXCord+ (2*startRadius))
-                        .attr("cy", startYCord)
-                        .attr("r", startRadius)
-                        .attr("fill", "orange");
+
+    for(let i=0; i<5; i++){
+      let circleEle = createCircleEle(i);
+      circleList.push(circleEle);
+    }
 
     //Generate the weights array then pass it to the workers
     let weightsArray = generateRandomArrayWeights();
@@ -39,8 +34,25 @@
     getInsertionSortMoves(weightsArray);
     getBubbleSortMoves(weightsArray);
 
+    // animationLoop(circleEle1, circleEle2, 0);
 
-    animationLoop(circleEle1, circleEle2, 0);
+    //Creates a circle element in a line along the designated x axis
+    function createCircleEle(eleStartIndex){
+      // let color = d3.scale.category20();
+
+      let circleEle = canvas.append("circle")
+                        .attr("cx", startXCord + (eleStartIndex*2*startRadius))
+                        .attr("cy", startYCord)
+                        .attr("r", startRadius)
+                        .attr("fill", getRandomColor);
+
+      return circleEle;
+    }
+
+    //Adds random fill color to an svg attribute
+    function getRandomColor(){
+      return "hsl(" + Math.random() * 360 + ",100%,50%)"
+    }
 
     //swapIndex, ending function for the recurrsion
     function animationLoop(circle1, circle2, swapIndex){
