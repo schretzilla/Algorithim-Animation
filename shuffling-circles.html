@@ -41,12 +41,18 @@
 
     //Creates a circle element in a line along the designated x axis
     function createCircleEle(eleStartIndex, circleSize){
+      let circleXCord = startXCord + (eleStartIndex*startRadius);
+
       let circleEle = canvas.append("circle")
-                        .attr("cx", startXCord + (eleStartIndex*startRadius))
+                        .attr("cx", circleXCord)
                         .attr("cy", startYCord)
                         .attr("r", circleSize)
                         .attr("fill", getRandomColor);
-
+      let textEle = canvas.append("text")
+                        .attr("x", circleXCord)
+                        .attr("y", startYCord)
+                        .attr("dy", ".5em")
+                        .text(circleSize);
       return circleEle;
     }
     
