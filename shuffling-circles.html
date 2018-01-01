@@ -2,7 +2,7 @@
 <html>
 
 <head>
-		<title>D3 Test</title>
+		<title>Sorting Algorithm Animations</title>
 		<script src="d3.v4.js"></script>
 </head>
 
@@ -146,8 +146,7 @@
       return weightsArray;
     }
 
-    //return a list of all swap pairs needed for the list to become sorted
-    // TODO: this might be insertion sort
+    //Return a list of all swap pairs needed for the list to become sorted
     function getInsertionSortMoves(weightsArray){
       //Records the pairs of indexs that are swapped
       let movesArray = [];
@@ -178,6 +177,7 @@
       return movesArray;
     }
 
+    // TODO Finish bubble sort
     function getBubbleSortMoves(weightsArray){
       for(let i=0; i<weightsArray.length; i++){
         let curNum = weightsArray[i];
