@@ -39,10 +39,14 @@
     getInsertionSortMoves(weightsArray);
     getBubbleSortMoves(weightsArray);
 
-    // let animationTimeDuration = swapPlaces(Homecircle1, Homecircle2, 0);
-    //TODO add timeout here instead of passing it as a var
-    // swapPlaces(Homecircle1, Homecircle2, animationTimeDuration);
-  
+    let animationTimeDuration = swapPlaces(Homecircle1, Homecircle2, 0);
+
+    setTimeout(function(){
+      console.log('Second swap');
+      swapPlaces(Homecircle1, Homecircle2, animationTimeDuration);
+    }, animationTimeDuration);
+
+
     //animationStartTime = the time in which previous animations have ended 
     function swapPlaces(circle1, circle2, animationStartTime){
       console.log("swap called");
@@ -53,35 +57,33 @@
 
       //Move one circle up one full circle radius
       circle1.transition()
-          .delay(animationStartTime)
           .duration(moveDuration)   //measured in Mili Seconds
           .attr("cy", stagingYCord1);
 
       //Move the other circle up 2 full radius
       circle2.transition()
-          .delay(animationStartTime)
           .duration(moveDuration)
           .attr("cy", stagingYCord2);
       
       //Swap circles' x positions
       circle1.transition()
-        .delay(animationStartTime + moveDuration)
+        .delay(moveDuration)
         .duration(moveDuration)
         .attr("cx", circle2.attr("cx"));
 
       circle2.transition()
-        .delay(animationStartTime + moveDuration)
+        .delay(moveDuration)
         .duration(moveDuration)
         .attr("cx", circle1.attr("cx"));
 
       //Move back to original line
       circle1.transition()
-        .delay(animationStartTime + 2*moveDuration)
+        .delay(2*moveDuration)
         .duration(moveDuration)
         .attr("cy", startYCord);
 
       circle2.transition()
-        .delay(animationStartTime + 2*moveDuration)
+        .delay(2*moveDuration)
         .duration(moveDuration)
         .attr("cy", startYCord);
 
