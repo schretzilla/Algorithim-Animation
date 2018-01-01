@@ -39,13 +39,27 @@
     getInsertionSortMoves(weightsArray);
     getBubbleSortMoves(weightsArray);
 
-    let animationTimeDuration = swapPlaces(Homecircle1, Homecircle2, 0);
+    // let animationTimeDuration = swapPlaces(Homecircle1, Homecircle2, 0);
 
-    setTimeout(function(){
-      console.log('Second swap');
-      swapPlaces(Homecircle1, Homecircle2, animationTimeDuration);
-    }, animationTimeDuration);
+    // setTimeout(function(){
+    //   console.log('Second swap');
+    //   swapPlaces(Homecircle1, Homecircle2, animationTimeDuration);
+    // }, animationTimeDuration);
 
+    animationLoop(Homecircle1, Homecircle2, 0);
+    
+    function animationLoop(circle1, circle2, swapIndex){
+      let animationTimeDuration = swapPlaces(circle1, circle2, 0);
+
+      if(swapIndex < 3){
+        setTimeout(function(){
+          console.log(swapIndex + 'next swap');
+          // swapPlaces(Homecircle1, Homecircle2, animationTimeDuration);
+          animationLoop(circle2, circle1, swapIndex+1);
+        }, animationTimeDuration);
+      }
+      
+    }
 
     //animationStartTime = the time in which previous animations have ended 
     function swapPlaces(circle1, circle2, animationStartTime){
