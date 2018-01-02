@@ -44,7 +44,17 @@
       let circleXCord = startXCord + (eleStartIndex*startRadius);
 
       //TODO use group instead of object class to reduce code
-      // let blockLayer = canvas.append("g");
+      // let groupTest = canvas.append("g");
+
+      // groupTest.append("circle")
+      //           .attr("cx", 20)
+      //           .attr("cy", 20)
+      //           .attr("r", 30);
+      
+      // let xtest = 500;
+      // groupTest.transition()
+      //       .duration(1000)  
+      //       .attr("transform", "translate(0, " + xtest + ")");
 
       let circleEle = canvas.append("circle")
                         .attr("cx", circleXCord)
