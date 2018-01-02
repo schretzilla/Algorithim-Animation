@@ -2,25 +2,71 @@
 <html>
 
 <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 		<title>Sorting Algorithm Animations</title>
-		<script src="d3.v4.js"></script>
+    <script src="d3.v4.js"></script>
+    <link rel="stylesheet" href="./bootstrap-3.3.6-dist/css/bootstrap.min.css" >
+
+    <style>
+      body {
+        min-height: 2000px;
+        padding-top: 70px;
+      }
+    </style>
 </head>
 
 <body>
+   <!-- Fixed navbar -->
+   <nav class="navbar navbar-default navbar-fixed-top">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="#">Algorithm Animations</a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+          <ul class="nav navbar-nav">
+            <li class="active"><a href="#">Home</a></li>
+            <li><a href="#about">About</a></li>
+          </ul>
+          <ul class="nav navbar-nav navbar-right">
+            <li><a href="https://github.com/schretzilla/Algorithim-Animation">GitHub</a></li>
+          </ul>
+        </div><!--/.nav-collapse -->
+      </div>
+    </nav>
+
+  <div class="container">
+    <h1 class="text-center">Insertion Sort</h1>
+    <div class="row">
+      <div id="canvas-area" class="center-block" style="background-color:#ccc;">
+          <!-- Canvas Div Area -->
+      </div>
+    </div>
+    
+  </div>
+  
+
+
   <script>
     //global vars
     let startYCord = 100;
     let startXCord = 50;
-    let startRadius = 70;
+    let maxRadius = 40;
     let moveDuration = 500;
     let circleObjectList = [];
     //build canvas
-    var canvas = d3.select("body")
+    var canvas = d3.select("#canvas-area")
             .append("svg")
             .attr("width", 1000)
-            .attr("height", 500);
+            .attr("height", 400);
 
-    // TODO: Add text with value for circle (or do radius size)
     let weightsArray = generateRandomArrayWeights();
 
     for(let i=0; i<10; i++){
@@ -41,7 +87,7 @@
 
     //Creates a circle element in a line along the designated x axis
     function createCircleEle(eleStartIndex, circleSize){
-      let circleXCord = startXCord + (eleStartIndex*startRadius);
+      let circleXCord = startXCord + (eleStartIndex* 2 * maxRadius);
 
       //TODO use group instead of object class to reduce code
       // let groupTest = canvas.append("g");
@@ -119,11 +165,10 @@
 
     //Swap the position of the two circle elements
     function swapPlaces(circleObject1, circleObject2){
-      console.log("swap called");
       // The displaced y position where cirlce1's swaps will occure
       let stagingYCord1 = 200;
       // The displaced y position where circleElement2's swaps will occure
-      let stagingYCord2 = 200 + (2*startRadius);
+      let stagingYCord2 = 200 + (2*maxRadius);
 
       let circleElement1 = circleObject1.circleElement;
       let circleElement2 = circleObject2.circleElement;
@@ -194,12 +239,14 @@
       return 3*moveDuration;
     }
 
-    //Generate random array of ints between 1-10
+    //Generate random array of ints between 1-50
     function generateRandomArrayWeights(){
       let weightsArray = [];
+      let maxValue = 40;
+      let minValue = 10;
       for(let i=0; i<10; i++){
-        let newNum = Math.floor(Math.random() * 10) + 10;
-        newNum = newNum * 2;
+        let newNum = Math.floor(Math.random() * maxValue) + minValue;
+        // newNum = newNum * 2;
         weightsArray.push(newNum);
       }
 
@@ -251,6 +298,8 @@
     }
 
   </script>
+<script src="./js/jquery-1.12.4.min.js"></script>
+<script src="./bootstrap-3.3.6-dist/js/bootstrap.min.js"></script>
 
 </body>
 
