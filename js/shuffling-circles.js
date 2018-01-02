@@ -20,13 +20,12 @@ for(let i=0; i<10; i++){
 
 //Generate the weights array then pass it to the workers
 console.log(weightsArray);
-let insertionSortMoves = getInsertionSortMoves(weightsArray);
-getBubbleSortMoves(weightsArray);
+// let insertionSortMoves = getInsertionSortMoves(weightsArray);
+let bubbleSortMoves = getBubbleSortMoves(weightsArray);
 
-console.log("insertion moves" + insertionSortMoves);
 
 //Kick off the animation
-animate(insertionSortMoves);
+animate(bubbleSortMoves);
 
 //Creates a circle element in a line along the designated x axis
 function createCircleEle(eleStartIndex, circleSize){
@@ -227,12 +226,30 @@ function getInsertionSortMoves(weightsArray){
   return movesArray;
 }
 
-// TODO Finish bubble sort
+//Compare each element to its neghibor and bubble the biggest to the top
 function getBubbleSortMoves(weightsArray){
-  for(let i=0; i<weightsArray.length; i++){
-    let curNum = weightsArray[i];
-    // for
+  let movesArray = [];
+
+  for(let i=0; i<weightsArray.length-1; i++){
+    for(let j=0; j<weightsArray.length; j++){
+      let curNum = weightsArray[j];
+      let nextNum = weightsArray[j+1];
+      
+      if(curNum > nextNum){
+        //swap occures
+        let temp = weightsArray[j];
+        weightsArray[j] = nextNum;
+        weightsArray[j+1] = temp;
+  
+        let swappedIndices = [j, j+1];
+        movesArray.push(swappedIndices);
+      }
+    } 
   }
+
+  console.log("Bubble sort result " + weightsArray);
+  console.log("Bubble sort's moves: " + movesArray);
+  return movesArray;
 }
 
 //Adds random fill color to an svg attribute
