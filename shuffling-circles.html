@@ -13,7 +13,7 @@
     let startXCord = 50;
     let startRadius = 70;
     let moveDuration = 500;
-    let circleList = [];
+    let circleObjectList = [];
     //build canvas
     var canvas = d3.select("body")
             .append("svg")
@@ -26,7 +26,7 @@
     for(let i=0; i<10; i++){
       let circleSize = weightsArray[i];
       let circleEle = createCircleEle(i, circleSize);
-      circleList.push(circleEle);
+      circleObjectList.push(circleEle);
     }
 
     //Generate the weights array then pass it to the workers
@@ -43,6 +43,9 @@
     function createCircleEle(eleStartIndex, circleSize){
       let circleXCord = startXCord + (eleStartIndex*startRadius);
 
+      //TODO use group instead of object class to reduce code
+      // let blockLayer = canvas.append("g");
+
       let circleEle = canvas.append("circle")
                         .attr("cx", circleXCord)
                         .attr("cy", startYCord)
@@ -52,8 +55,15 @@
                         .attr("x", circleXCord)
                         .attr("y", startYCord)
                         .attr("dy", ".5em")
+                        .style("text-anchor", "middle")
                         .text(circleSize);
-      return circleEle;
+
+      let circleObject = {
+        circleElement: circleEle,
+        textElement: textEle
+      }
+
+      return circleObject;
     }
     
     // Kicks off the recursive animation for swap lists
@@ -62,12 +72,12 @@
       let currentMoves = swapList[0];
       let circle1Index = currentMoves[0];
       let circle2Index = currentMoves[1];
-      let circle1 = circleList[circle1Index];
-      let circle2 = circleList[circle2Index];
+      let circle1 = circleObjectList[circle1Index];
+      let circle2 = circleObjectList[circle2Index];
       
       //Update the circleslist
-      circleList[circle1Index] = circle2;
-      circleList[circle2Index] = circle1;
+      circleObjectList[circle1Index] = circle2;
+      circleObjectList[circle2Index] = circle1;
 
       animationLoop(circle1, circle2, 1, swapList);
 
@@ -83,59 +93,93 @@
           let currentMoves = swapList[swapIndex];
           let circle1Index = currentMoves[0];
           let circle2Index = currentMoves[1];
-          let circle1 = circleList[circle1Index];
-          let circle2 = circleList[circle2Index];
+          let circle1 = circleObjectList[circle1Index];
+          let circle2 = circleObjectList[circle2Index];
 
           //Update the circleslist
-          circleList[circle1Index] = circle2;
-          circleList[circle2Index] = circle1;
+          circleObjectList[circle1Index] = circle2;
+          circleObjectList[circle2Index] = circle1;
 
           console.log('swapping ' + circle1Index + ' with ' + circle2Index);
-          animationLoop(circleList[circle1Index], circleList[circle2Index], swapIndex+1, swapList);
+          animationLoop(circleObjectList[circle1Index], circleObjectList[circle2Index], swapIndex+1, swapList);
         }, animationTimeDuration);
       }
       
     }
 
     //Swap the position of the two circle elements
-    function swapPlaces(circle1, circle2){
+    function swapPlaces(circleObject1, circleObject2){
       console.log("swap called");
       // The displaced y position where cirlce1's swaps will occure
       let stagingYCord1 = 200;
-      // The displaced y position where circle2's swaps will occure
+      // The displaced y position where circleElement2's swaps will occure
       let stagingYCord2 = 200 + (2*startRadius);
 
+      let circleElement1 = circleObject1.circleElement;
+      let circleElement2 = circleObject2.circleElement;
+
+      let textElement1 = circleObject1.textElement;
+      let textElement2 = circleObject2.textElement;
+
       //Move one circle up one full circle radius
-      circle1.transition()
-          .duration(moveDuration)   //measured in Mili Seconds
+      circleElement1.transition()
+          .duration(moveDuration)  
           .attr("cy", stagingYCord1);
 
+      textElement1.transition()
+          .duration(moveDuration)  
+          .attr("y", stagingYCord1);
+
       //Move the other circle up 2 full radius
-      circle2.transition()
+      circleElement2.transition()
           .duration(moveDuration)
           .attr("cy", stagingYCord2);
       
-      //Swap circles' x positions
-      circle1.transition()
-        .delay(moveDuration)
-        .duration(moveDuration)
-        .attr("cx", circle2.attr("cx"));
+      textElement2.transition()
+          .duration(moveDuration)
+          .attr("y", stagingYCord2);
 
-      circle2.transition()
+      //Swap circles' x positions
+      circleElement1.transition()
         .delay(moveDuration)
         .duration(moveDuration)
-        .attr("cx", circle1.attr("cx"));
+        .attr("cx", circleElement2.attr("cx"));
+
+      textElement1.transition()
+        .delay(moveDuration)
+        .duration(moveDuration)
+        .attr("x", circleElement2.attr("cx"));
+
+      circleElement2.transition()
+        .delay(moveDuration)
+        .duration(moveDuration)
+        .attr("cx", circleElement1.attr("cx"));
+
+      textElement2.transition()
+        .delay(moveDuration)
+        .duration(moveDuration)
+        .attr("x", circleElement1.attr("cx"));
 
       //Move back to original line
-      circle1.transition()
+      circleElement1.transition()
         .delay(2*moveDuration)
         .duration(moveDuration)
         .attr("cy", startYCord);
 
-      circle2.transition()
+      circleElement2.transition()
         .delay(2*moveDuration)
         .duration(moveDuration)
         .attr("cy", startYCord);
+
+      textElement1.transition()
+        .delay(2*moveDuration)
+        .duration(moveDuration)
+        .attr("y", startYCord);
+
+      textElement2.transition()
+        .delay(2*moveDuration)
+        .duration(moveDuration)
+        .attr("y", startYCord);
 
       return 3*moveDuration;
     }
