@@ -86,7 +86,7 @@ function animationLoop(circle1, circle2, swapIndex, swapList){
   let animationTimeDuration = swapPlaces(circle1, circle2, 0);
 
   if(swapIndex < swapList.length){
-    setTimeout(function(){
+    d3.timeout(function(){
       console.log('swap #' + swapIndex);
       let currentMoves = swapList[swapIndex];
       let circle1Index = currentMoves[0];
