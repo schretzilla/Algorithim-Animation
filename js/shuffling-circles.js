@@ -105,7 +105,7 @@ function animateLoop(stepIndex, stepList){
 
   d3.timeout(function(){
 
-    if(stepIndex < stepList.length){
+    if(stepIndex < stepList.length-1){
       // let swapAnimationDuration = swapPlaces(circle1, circle2, 0);
 
       // d3.timeout(function(){
@@ -120,8 +120,9 @@ function animateLoop(stepIndex, stepList){
 
       //   }
       // }, swapAnimationDuration);
+
+      animateLoop(stepIndex+1, stepList);
     }
-    animateLoop(stepIndex+1, stepList);
   }, comparisonDelayTime);
 
 }
@@ -153,7 +154,7 @@ function animateLoop(stepIndex, stepList){
 function drawIdentifierDots(circleObject1, circleObject2){
   let distanceAbove = -60;
   let identiferSize = 10;
-  let removalDelay = 1000;
+  let removalDelay = 100;
   let circle1 = circleObject1.circleElement;
   let circle2 = circleObject2.circleElement;
 
@@ -263,7 +264,6 @@ function generateRandomArrayWeights(){
   let minValue = 10;
   for(let i=0; i<10; i++){
     let newNum = Math.floor(Math.random() * maxValue) + minValue;
-    // newNum = newNum * 2;
     weightsArray.push(newNum);
   }
 
