@@ -12,6 +12,7 @@ var canvas = d3.select("#canvas-area")
 
 let weightsArray = generateRandomArrayWeights();
 
+//Create 10 circles
 for(let i=0; i<10; i++){
   let circleSize = weightsArray[i];
   let circleEle = createCircleEle(i, circleSize);
@@ -65,44 +66,118 @@ function createCircleEle(eleStartIndex, circleSize){
 }
 
 // Kicks off the recursive animation for swap lists
-// <swapList> the list of swaps that need to be made.
-function animate(swapList){
-  let currentMoves = swapList[0];
-  let circle1Index = currentMoves[0];
-  let circle2Index = currentMoves[1];
+// <algorithmSteps> the list of steps that were made during the sort
+function animate(algorithmSteps){
+  let curAlgoritmStep = algorithmSteps[0];
+  let circle1 = circleObjectList[curAlgoritmStep.indexA].circleElement;
+  let circle2 = circleObjectList[curAlgoritmStep.indexB].circleElement;
+
+  // drawIdentifierDots(circle1, circle2);
+  // let itemA = algorithmSteps[0].indexA;
+  // let itemB = algorithmSteps[0].indexB;
+
+  // let currentMoves = algorithmSteps[0];
+  // let circle1Index = currentMoves[0];
+  // let circle2Index = currentMoves[1];
+  // let circle1 = circleObjectList[circle1Index];
+  // let circle2 = circleObjectList[circle2Index];
+  
+  // //Update the circleslist
+  // circleObjectList[circle1Index] = circle2;
+  // circleObjectList[circle2Index] = circle1;
+
+  // animationLoop(circle1, circle2, 1, algorithmSteps);
+
+  animateLoop(0, algorithmSteps);
+}
+
+function animateLoop(stepIndex, stepList){
+  curAlgoritmStep = stepList[stepIndex];
+  console.log("index A: " + curAlgoritmStep.indexA);
+  console.log("index B: " + curAlgoritmStep.indexB);
+
+  let circle1Index = curAlgoritmStep.indexA;
+  let circle2Index = curAlgoritmStep.indexB;
   let circle1 = circleObjectList[circle1Index];
   let circle2 = circleObjectList[circle2Index];
-  
-  //Update the circleslist
-  circleObjectList[circle1Index] = circle2;
-  circleObjectList[circle2Index] = circle1;
 
-  animationLoop(circle1, circle2, 1, swapList);
+  let comparisonDelayTime = drawIdentifierDots(circle1, circle2);
+
+  d3.timeout(function(){
+
+    if(stepIndex < stepList.length){
+      // let swapAnimationDuration = swapPlaces(circle1, circle2, 0);
+
+      // d3.timeout(function(){
+      //   if(curAlgoritmStep.swapRequired){
+      //     console.log('swap #' + swapIndex);
+          
+
+      //     //Update the circleslist
+      //     circleObjectList[circle1Index] = circle2;
+      //     circleObjectList[circle2Index] = circle1;
+      //     console.log('swapping ' + circle1Index + ' with ' + circle2Index);
+
+      //   }
+      // }, swapAnimationDuration);
+    }
+    animateLoop(stepIndex+1, stepList);
+  }, comparisonDelayTime);
 
 }
 
 //swapIndex, ending function for the recurrsion
-function animationLoop(circle1, circle2, swapIndex, swapList){
-  let animationTimeDuration = swapPlaces(circle1, circle2, 0);
+// function animationLoop(circle1, circle2, swapIndex, swapList){
+//   let animationTimeDuration = swapPlaces(circle1, circle2, 0);
 
-  if(swapIndex < swapList.length){
-    d3.timeout(function(){
-      console.log('swap #' + swapIndex);
-      let currentMoves = swapList[swapIndex];
-      let circle1Index = currentMoves[0];
-      let circle2Index = currentMoves[1];
-      let circle1 = circleObjectList[circle1Index];
-      let circle2 = circleObjectList[circle2Index];
+//   if(swapIndex < swapList.length){
+//     d3.timeout(function(){
+//       console.log('swap #' + swapIndex);
+//       let currentMoves = swapList[swapIndex];
+//       let circle1Index = currentMoves[0];
+//       let circle2Index = currentMoves[1];
+//       let circle1 = circleObjectList[circle1Index];
+//       let circle2 = circleObjectList[circle2Index];
 
-      //Update the circleslist
-      circleObjectList[circle1Index] = circle2;
-      circleObjectList[circle2Index] = circle1;
+//       //Update the circleslist
+//       circleObjectList[circle1Index] = circle2;
+//       circleObjectList[circle2Index] = circle1;
 
-      console.log('swapping ' + circle1Index + ' with ' + circle2Index);
-      animationLoop(circleObjectList[circle1Index], circleObjectList[circle2Index], swapIndex+1, swapList);
-    }, animationTimeDuration);
-  }
+//       console.log('swapping ' + circle1Index + ' with ' + circle2Index);
+//       animationLoop(circleObjectList[circle1Index], circleObjectList[circle2Index], swapIndex+1, swapList);
+//     }, animationTimeDuration);
+//   }
   
+// }
+
+function drawIdentifierDots(circleObject1, circleObject2){
+  let distanceAbove = -60;
+  let identiferSize = 10;
+  let removalDelay = 1000;
+  let circle1 = circleObject1.circleElement;
+  let circle2 = circleObject2.circleElement;
+
+  let identifierEle1 = canvas.append("circle")
+                    .attr("cx", circle1.attr("cx"))
+                    .attr("cy", startYCord + distanceAbove)
+                    .attr("r", identiferSize)
+                    .attr("fill", "red");
+  
+  let identifierEle2 = canvas.append("circle")
+                    .attr("cx", circle2.attr("cx"))
+                    .attr("cy", startYCord + distanceAbove)
+                    .attr("r", identiferSize)
+                    .attr("fill", "green");
+
+  identifierEle1.transition()
+                .delay(removalDelay)
+                .remove();
+
+  identifierEle2.transition()
+                .delay(removalDelay)
+                .remove();
+  
+  return(removalDelay);
 }
 
 //Swap the position of the two circle elements
@@ -226,30 +301,46 @@ function getInsertionSortMoves(weightsArray){
   return movesArray;
 }
 
-//Compare each element to its neghibor and bubble the biggest to the top
+//Compare each element to its neighbor and bubble the biggest to the top
+// Returns each comparison used during the sort
 function getBubbleSortMoves(weightsArray){
-  let movesArray = [];
+  // stores the list of each step taken in the algorithm
+  let algorithmSteps = [];
 
   for(let i=0; i<weightsArray.length-1; i++){
-    for(let j=0; j<weightsArray.length; j++){
+    for(let j=0; j<weightsArray.length-1; j++){
+      
+      // Algorithm Step object 
+      // console.log("index B : " + int(j+1));
+      let algorithmStep = {
+        indexA: j,
+        indexB: j+1,
+        swapRequired: false
+      }
+      console.log(algorithmStep.indexB);
       let curNum = weightsArray[j];
       let nextNum = weightsArray[j+1];
+      console.log("next num: " + nextNum);
       
       if(curNum > nextNum){
         //swap occures
         let temp = weightsArray[j];
         weightsArray[j] = nextNum;
         weightsArray[j+1] = temp;
-  
-        let swappedIndices = [j, j+1];
-        movesArray.push(swappedIndices);
+        
+        // let swappedIndices = [j, j+1];
+        // Swap is required
+        algorithmStep.swapRequired = true;
+        // algorithmSteps.push(swappedIndices);
       }
+
+      algorithmSteps.push(algorithmStep);
     } 
   }
 
   console.log("Bubble sort result " + weightsArray);
-  console.log("Bubble sort's moves: " + movesArray);
-  return movesArray;
+  // console.log("Bubble sort's moves: " + algorithmSteps);
+  return algorithmSteps;
 }
 
 //Adds random fill color to an svg attribute
