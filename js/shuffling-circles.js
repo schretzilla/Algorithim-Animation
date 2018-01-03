@@ -102,59 +102,28 @@ function animateLoop(stepIndex, stepList){
   let circle2 = circleObjectList[circle2Index];
 
   let comparisonDelayTime = drawIdentifierDots(circle1, circle2);
+  if(curAlgoritmStep.swapRequired){
+    let additionalTimeForSwap = swapPlaces(circle1, circle2, 0);
+    comparisonDelayTime += additionalTimeForSwap;
+
+    //Update the circleslist
+    circleObjectList[circle1Index] = circle2;
+    circleObjectList[circle2Index] = circle1;
+    console.log('swapping ' + circle1Index + ' with ' + circle2Index);
+  }
 
   d3.timeout(function(){
-
     if(stepIndex < stepList.length-1){
-      // let swapAnimationDuration = swapPlaces(circle1, circle2, 0);
-
-      // d3.timeout(function(){
-      //   if(curAlgoritmStep.swapRequired){
-      //     console.log('swap #' + swapIndex);
-          
-
-      //     //Update the circleslist
-      //     circleObjectList[circle1Index] = circle2;
-      //     circleObjectList[circle2Index] = circle1;
-      //     console.log('swapping ' + circle1Index + ' with ' + circle2Index);
-
-      //   }
-      // }, swapAnimationDuration);
-
       animateLoop(stepIndex+1, stepList);
     }
   }, comparisonDelayTime);
 
 }
 
-//swapIndex, ending function for the recurrsion
-// function animationLoop(circle1, circle2, swapIndex, swapList){
-//   let animationTimeDuration = swapPlaces(circle1, circle2, 0);
-
-//   if(swapIndex < swapList.length){
-//     d3.timeout(function(){
-//       console.log('swap #' + swapIndex);
-//       let currentMoves = swapList[swapIndex];
-//       let circle1Index = currentMoves[0];
-//       let circle2Index = currentMoves[1];
-//       let circle1 = circleObjectList[circle1Index];
-//       let circle2 = circleObjectList[circle2Index];
-
-//       //Update the circleslist
-//       circleObjectList[circle1Index] = circle2;
-//       circleObjectList[circle2Index] = circle1;
-
-//       console.log('swapping ' + circle1Index + ' with ' + circle2Index);
-//       animationLoop(circleObjectList[circle1Index], circleObjectList[circle2Index], swapIndex+1, swapList);
-//     }, animationTimeDuration);
-//   }
-  
-// }
-
 function drawIdentifierDots(circleObject1, circleObject2){
   let distanceAbove = -60;
   let identiferSize = 10;
-  let removalDelay = 100;
+  let removalDelay = 1000;
   let circle1 = circleObject1.circleElement;
   let circle2 = circleObject2.circleElement;
 
@@ -319,9 +288,7 @@ function getBubbleSortMoves(weightsArray){
       }
       console.log(algorithmStep.indexB);
       let curNum = weightsArray[j];
-      let nextNum = weightsArray[j+1];
-      console.log("next num: " + nextNum);
-      
+      let nextNum = weightsArray[j+1];      
       if(curNum > nextNum){
         //swap occures
         let temp = weightsArray[j];
