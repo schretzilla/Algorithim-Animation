@@ -1,5 +1,5 @@
 //global vars
-let startYCord = 100;
+let startYCord = 150;
 let startXCord = 50;
 let maxRadius = 40;
 let moveDuration = 500;
@@ -127,6 +127,28 @@ function drawIdentifierDots(circleObject1, circleObject2){
   let circle1 = circleObject1.circleElement;
   let circle2 = circleObject2.circleElement;
 
+  //Drawl text
+  let circleAValue = circleObject1.textElement.text();
+  let circleBValue = circleObject2.textElement.text();
+  let comparisonTextEle = canvas.append("text")
+                      .attr("x", 500)
+                      .attr("y", 20)
+                      .attr("dy", ".5em")
+                      .attr("font-size", "20px")
+                      .text("Is " + circleAValue + " > " + circleBValue + " ?");
+
+  let outcomeTextEle = canvas.append("text")
+          .attr("x", 500)
+          .attr("y", 45)
+          .attr("dy", ".5em")
+          .attr("font-size", "20px");
+  if(circleAValue > circleBValue){
+    outcomeTextEle.text("Yes, so swap!");
+  }
+  else{
+    outcomeTextEle.text("No, Don't swap!");
+  }
+
   let identifierEle1 = canvas.append("circle")
                     .attr("cx", circle1.attr("cx"))
                     .attr("cy", startYCord + distanceAbove)
@@ -144,6 +166,14 @@ function drawIdentifierDots(circleObject1, circleObject2){
                 .remove();
 
   identifierEle2.transition()
+                .delay(removalDelay)
+                .remove();
+
+  comparisonTextEle.transition()
+          .delay(removalDelay)
+          .remove();
+    
+  outcomeTextEle.transition()
                 .delay(removalDelay)
                 .remove();
   
