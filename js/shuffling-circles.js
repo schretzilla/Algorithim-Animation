@@ -159,10 +159,12 @@ function drawIdentifierDots(circleObject1, circleObject2){
 
   // Determine outcome text
   if(circleAValue > circleBValue){
-    outcomeTextEle.text("Yes, so swap!");
+    outcomeTextEle.style("fill", "green")
+                  .text("Yes, so swap!");
   }
   else{
-    outcomeTextEle.text("No, Don't swap!");
+    outcomeTextEle.style("fill", "red")
+                  .text("No, Don't swap!");
   }
 
   //Identifier object group setup
@@ -190,7 +192,7 @@ function drawIdentifierDots(circleObject1, circleObject2){
           .delay(removalDelay)
           .remove();
   
-  return(2 * removalDelay);
+  return(removalDelay);
 }
 
 //Swap the position of the two circle elements
