@@ -102,46 +102,58 @@ function animateLoop(stepIndex, stepList){
   let circle2 = circleObjectList[circle2Index];
 
   let comparisonDelayTime = drawIdentifierDots(circle1, circle2);
-  if(curAlgoritmStep.swapRequired){
-    let additionalTimeForSwap = swapPlaces(circle1, circle2, 0);
-    comparisonDelayTime += additionalTimeForSwap;
-
-    //Update the circleslist
-    circleObjectList[circle1Index] = circle2;
-    circleObjectList[circle2Index] = circle1;
-    console.log('swapping ' + circle1Index + ' with ' + circle2Index);
-  }
 
   d3.timeout(function(){
-    if(stepIndex < stepList.length-1){
-      animateLoop(stepIndex+1, stepList);
-    }
-  }, comparisonDelayTime);
+    let swapDelayTime = 500;
+    if(curAlgoritmStep.swapRequired){
+      swapDelayTime = swapPlaces(circle1, circle2, 0);
 
+      //Update the circleslist
+      circleObjectList[circle1Index] = circle2;
+      circleObjectList[circle2Index] = circle1;
+      console.log('swapping ' + circle1Index + ' with ' + circle2Index);
+    }
+
+    d3.timeout(function(){
+      if(stepIndex < stepList.length-1){
+        animateLoop(stepIndex+1, stepList);
+      }
+    }, swapDelayTime);
+
+  }, comparisonDelayTime);
 }
 
 function drawIdentifierDots(circleObject1, circleObject2){
   let distanceAbove = -60;
   let identiferSize = 10;
-  let removalDelay = 1000;
+  let removalDelay = 1500;
   let circle1 = circleObject1.circleElement;
   let circle2 = circleObject2.circleElement;
 
   //Drawl text
   let circleAValue = circleObject1.textElement.text();
   let circleBValue = circleObject2.textElement.text();
+
+  // Show comparison text
   let comparisonTextEle = canvas.append("text")
                       .attr("x", 500)
                       .attr("y", 20)
                       .attr("dy", ".5em")
+                      .style("text-anchor", "middle")
                       .attr("font-size", "20px")
                       .text("Is " + circleAValue + " > " + circleBValue + " ?");
 
+  // Create text area for outcome of comparison
   let outcomeTextEle = canvas.append("text")
+          .transition()
+          .delay(500)
           .attr("x", 500)
           .attr("y", 45)
           .attr("dy", ".5em")
+          .style("text-anchor", "middle")
           .attr("font-size", "20px");
+
+  // Determine outcome text
   if(circleAValue > circleBValue){
     outcomeTextEle.text("Yes, so swap!");
   }
@@ -174,10 +186,10 @@ function drawIdentifierDots(circleObject1, circleObject2){
           .remove();
     
   outcomeTextEle.transition()
-                .delay(removalDelay)
+                .delay(removalDelay - 600)
                 .remove();
   
-  return(removalDelay);
+  return(2 * removalDelay);
 }
 
 //Swap the position of the two circle elements
