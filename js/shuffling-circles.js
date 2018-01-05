@@ -126,7 +126,8 @@ function animateLoop(stepIndex, stepList){
 function drawIdentifierDots(circleObject1, circleObject2){
   let distanceAbove = -60;
   let identiferSize = 10;
-  let removalDelay = 1500;
+  let removalDelay = 2000;
+  let thoughtTimeDelay = 1000; //Time to delay before answering the comparison
   let circle1 = circleObject1.circleElement;
   let circle2 = circleObject2.circleElement;
 
@@ -134,8 +135,11 @@ function drawIdentifierDots(circleObject1, circleObject2){
   let circleAValue = circleObject1.textElement.text();
   let circleBValue = circleObject2.textElement.text();
 
+  //create group element
+  let questionGroup = canvas.append("g");
+
   // Show comparison text
-  let comparisonTextEle = canvas.append("text")
+  let comparisonTextEle = questionGroup.append("text")
                       .attr("x", 500)
                       .attr("y", 20)
                       .attr("dy", ".5em")
@@ -144,14 +148,14 @@ function drawIdentifierDots(circleObject1, circleObject2){
                       .text("Is " + circleAValue + " > " + circleBValue + " ?");
 
   // Create text area for outcome of comparison
-  let outcomeTextEle = canvas.append("text")
-          .transition()
-          .delay(500)
-          .attr("x", 500)
-          .attr("y", 45)
-          .attr("dy", ".5em")
-          .style("text-anchor", "middle")
-          .attr("font-size", "20px");
+  let outcomeTextEle = questionGroup.append("text")
+                    .transition()
+                    .delay(thoughtTimeDelay)
+                    .attr("x", 500)
+                    .attr("y", 45)
+                    .attr("dy", ".5em")
+                    .style("text-anchor", "middle")
+                    .attr("font-size", "20px");
 
   // Determine outcome text
   if(circleAValue > circleBValue){
@@ -161,33 +165,30 @@ function drawIdentifierDots(circleObject1, circleObject2){
     outcomeTextEle.text("No, Don't swap!");
   }
 
-  let identifierEle1 = canvas.append("circle")
+  //Identifier object group setup
+  let identifierGroup = canvas.append("g");
+
+  let identifierEle1 = identifierGroup.append("circle")
                     .attr("cx", circle1.attr("cx"))
                     .attr("cy", startYCord + distanceAbove)
                     .attr("r", identiferSize)
                     .attr("fill", "red");
   
-  let identifierEle2 = canvas.append("circle")
+  let identifierEle2 = identifierGroup.append("circle")
                     .attr("cx", circle2.attr("cx"))
                     .attr("cy", startYCord + distanceAbove)
                     .attr("r", identiferSize)
                     .attr("fill", "green");
 
-  identifierEle1.transition()
+  // Remove the Identifier group object
+  identifierGroup.transition()
                 .delay(removalDelay)
                 .remove();
 
-  identifierEle2.transition()
-                .delay(removalDelay)
-                .remove();
-
-  comparisonTextEle.transition()
+  // Remove the question group
+  questionGroup.transition()
           .delay(removalDelay)
           .remove();
-    
-  outcomeTextEle.transition()
-                .delay(removalDelay - 600)
-                .remove();
   
   return(2 * removalDelay);
 }
