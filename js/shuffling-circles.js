@@ -4,6 +4,10 @@ let startXCord = 50;
 let maxRadius = 40;
 let moveDuration = 500;
 let circleObjectList = [];
+
+// TODO: This is an ugly way to stop recurssion
+// An ugly global flag to stop recurssion from happening on animation restarts
+let restartAnimation = false; 
 //build canvas
 var canvas = d3.select("#canvas-area")
         .append("svg")
@@ -22,11 +26,10 @@ for(let i=0; i<10; i++){
 //Generate the weights array then pass it to the workers
 console.log(weightsArray);
 // let insertionSortMoves = getInsertionSortMoves(weightsArray);
-let bubbleSortMoves = getBubbleSortMoves(weightsArray);
 
 
-//Kick off the animation
-animate(bubbleSortMoves);
+
+
 
 //Creates a circle element in a line along the designated x axis
 function createCircleEle(eleStartIndex, circleSize){
@@ -121,6 +124,8 @@ function animateLoop(stepIndex, stepList){
     }, swapDelayTime);
 
   }, comparisonDelayTime);
+
+
 }
 
 function drawIdentifierDots(circleObject1, circleObject2){
@@ -359,3 +364,19 @@ function getBubbleSortMoves(weightsArray){
 function getRandomColor(){
   return "hsl(" + Math.random() * 360 + ",100%,50%)"
 }
+
+// Event listener for Bubble-sort start click
+// Kicks off the animatio for buble sort
+$('#bubble-sort-start').click(function(){
+  console.log("start animation");
+  //Kick off the animation
+  let bubbleSortMoves = getBubbleSortMoves(weightsArray);
+  animate(bubbleSortMoves);
+} );
+
+// TODO: Implement way to restart algorithm
+// $('#bubble-sort-restart').click(function(){
+//   //clear canvas an restart
+//   restartAnimation = true;
+// })
+
