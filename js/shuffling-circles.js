@@ -369,6 +369,7 @@ function getRandomColor(){
 // Kicks off the animatio for buble sort
 $('#bubble-sort-start').click(function(){
   console.log("start animation");
+  $('#bubble-sort-start').addClass("disabled", true);
   //Kick off the animation
   let bubbleSortMoves = getBubbleSortMoves(weightsArray);
   animate(bubbleSortMoves);
