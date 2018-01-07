@@ -10,26 +10,35 @@ let maxRadius = 50;
 let bubbleSortObjects = [];
 
 //build canvas
-var canvas = d3.select("#canvas-area")
+var bubbleCanvas = d3.select("#canvas-area")
+        .append("svg")
+        .attr("width", 1000)
+        .attr("height", 400);
+
+var selectionSortCanvas = d3.select("#selection-sort-canvas")
         .append("svg")
         .attr("width", 1000)
         .attr("height", 400);
 
 let bubbleSortWeightsArray = generateRandomArrayWeights();
 let selectionSortWeights = generateRandomArrayWeights();
-getSelectionSortMoves(bubbleSortWeightsArray);
 
+drawCircles(bubbleCanvas, 10, bubbleSortWeightsArray);
+
+drawCircles(selectionSortCanvas, 10, selectionSortWeights);
 //Create all desired circles for sorting
-for(let i=0; i<10; i++){
-  let circleSize = bubbleSortWeightsArray[i];
-  let circleEle = createCircleEle(i, circleSize);
-  bubbleSortObjects.push(circleEle);
+
+
+function drawCircles(canvas, numberOfCircles, weightsArray){
+  for(let i=0; i<numberOfCircles; i++){
+    let circleSize = weightsArray[i];
+    let circleEle = createCircleEle(canvas, i, circleSize);
+    bubbleSortObjects.push(circleEle);
+  }
 }
 
-// let insertionSortMoves = getInsertionSortMoves(weightsArray);
-
 //Creates a circle element in a line along the designated x axis
-function createCircleEle(eleStartIndex, circleSize){
+function createCircleEle(canvas, eleStartIndex, circleSize){
   // The current circle's x coordinate
   let circleXCord = startXCord + (eleStartIndex * 2 * maxRadius);
 
@@ -58,7 +67,7 @@ function createCircleEle(eleStartIndex, circleSize){
 // Recrusive function to animate the steps of the algorithm
 // stepIndex: the current step of the algorithm
 // stepList: the total list of steps in the algorithm
-function animateLoop(stepIndex, stepList){
+function animateLoop(canvas, stepIndex, stepList){
   curAlgoritmStep = stepList[stepIndex];
   console.log("index A: " + curAlgoritmStep.indexA);
   console.log("index B: " + curAlgoritmStep.indexB);
@@ -68,7 +77,7 @@ function animateLoop(stepIndex, stepList){
   let circle1 = bubbleSortObjects[circle1Index];
   let circle2 = bubbleSortObjects[circle2Index];
 
-  let comparisonDelayTime = drawLogic(circle1, circle2);
+  let comparisonDelayTime = drawLogic(canvas, circle1, circle2);
 
   d3.timeout(function(){
     let swapDelayTime = 500;
@@ -83,7 +92,7 @@ function animateLoop(stepIndex, stepList){
 
     d3.timeout(function(){
       if(stepIndex < stepList.length-1){
-        animateLoop(stepIndex+1, stepList);
+        animateLoop(canvas, stepIndex+1, stepList);
       }
     }, swapDelayTime);
 
@@ -92,7 +101,7 @@ function animateLoop(stepIndex, stepList){
 }
 
 // Draws out the logic that happens in the comparison of the provided circle objects
-function drawLogic(circleObject1, circleObject2){
+function drawLogic(canvas, circleObject1, circleObject2){
   let distanceAbove = -60;
   let identiferSize = 10;
   let removalDelay = 2000;
@@ -397,9 +406,18 @@ $('#bubble-sort-start').click(function(){
   console.log("start animation");
   $('#bubble-sort-start').addClass("disabled", true);
   //Kick off the animation
-  let bubbleSortMoves = getBubbleSortMoves(weightsArray);
-  animateLoop(0, bubbleSortMoves);
+  let bubbleSortMoves = getBubbleSortMoves(bubbleSortWeightsArray);
+  animateLoop(bubbleCanvas, 0, bubbleSortMoves);
 } );
+
+$('#selction-sort-start').click(function(){
+  console.log("Start Selction Sort Animation");
+  $('#selection-sort-start').addClass("disabled", true);
+
+  //Kick off animation
+  let selectionSortMoves = getSelectionSortMoves(selectionSortWeights);
+  
+})
 
 // TODO: Implement way to restart algorithm
 // $('#bubble-sort-restart').click(function(){
