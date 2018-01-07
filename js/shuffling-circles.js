@@ -233,9 +233,6 @@ function drawSelectionLogic(canvas, circleObject1, circleObject2, minText){
                     .attr("font-size", "20px")
                     .text(outcomeText);
 
-  
-
-
   // The group for the identifier arrows
   let identifierGroup = canvas.append("g");
 
