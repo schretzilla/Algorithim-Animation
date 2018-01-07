@@ -107,7 +107,21 @@ function animateLoop(canvas, stepIndex, stepList){
 
 }
 
-function selectionSortAnimation(canvas, stepIndex, stepList){
+//Setup the canvas then kick off the selection animation loop
+function selectionSortAnimation(canvas, stepList){
+  let curMin = selectionSortObjects[stepList[0].indexA].textElement.text();
+  let minText = canvas.append("text")
+                      .attr("x", 40)
+                      .attr("y", 10)
+                      .attr("dy", ".5em")
+                      .style("text-anchor", "left")
+                      .attr("font-size", "20px")
+                      .text("Current Min: " + curMin);
+
+  selectionSortAnimationLoop(canvas, 0, stepList, minText);
+}
+
+function selectionSortAnimationLoop(canvas, stepIndex, stepList, minTextEle){
   curAlgoritmStep = stepList[stepIndex];
 
   let circle1Index = curAlgoritmStep.indexA;
@@ -116,7 +130,12 @@ function selectionSortAnimation(canvas, stepIndex, stepList){
   let circle1 = selectionSortObjects[circle1Index];
   let circle2 = selectionSortObjects[circle2Index];
 
-  let comparisonDelayTime = drawSelectionLogic(canvas, circle1, circle2);
+  let comparisonDelayTime;
+  if(curAlgoritmStep.action != "swap"){
+    comparisonDelayTime = drawSelectionLogic(canvas, circle1, circle2, minTextEle);
+  } else {
+    comparisonDelayTime = announceSwap(canvas, circle1, circle2);
+  }
 
   d3.timeout(function(){
     let swapDelayTime = 500;
@@ -131,15 +150,40 @@ function selectionSortAnimation(canvas, stepIndex, stepList){
 
     d3.timeout(function(){
       if(stepIndex < stepList.length-1){
-        selectionSortAnimation(canvas, stepIndex+1, stepList);
+        selectionSortAnimationLoop(canvas, stepIndex+1, stepList, minTextEle);
       }
     }, swapDelayTime);
 
   }, comparisonDelayTime);
 }
 
+function announceSwap(canvas, circleObject1, circleObject2){
+  //Draw text
+  let circleAValue = circleObject1.textElement.text();
+  let circleBValue = circleObject2.textElement.text();
+
+  //time of text announcement visibility
+  textVisiblityTime = 2000;
+
+  // Show anouncement text
+  let announcementText = canvas.append("text")
+                      .attr("x", 500)
+                      .attr("y", 20)
+                      .attr("dy", ".5em")
+                      .style("text-anchor", "middle")
+                      .attr("font-size", "20px")
+                      .text("Swapping " + circleBValue + " for new min " + circleAValue + ".");
+
+  announcementText.transition()
+                  .delay(textVisiblityTime)
+                  .remove();
+
+
+  return textVisiblityTime;
+}
+
 //TODO combine with draw logic
-function drawSelectionLogic(canvas, circleObject1, circleObject2){
+function drawSelectionLogic(canvas, circleObject1, circleObject2, minText){
   let distanceAbove = -60;
   let identiferSize = 10;
   let removalDelay = 2000;
@@ -151,43 +195,31 @@ function drawSelectionLogic(canvas, circleObject1, circleObject2){
   let circleAValue = circleObject1.textElement.text();
   let circleBValue = circleObject2.textElement.text();
 
-  // update min text
-  let minText = canvas.append("text")
-                      .attr("x", 40)
-                      .attr("y", 10)
-                      .attr("dy", ".5em")
-                      .style("text-anchor", "left")
-                      .attr("font-size", "20px")
-                      .text("Min is " + circleBValue);
-
   //create group element
   let questionGroup = canvas.append("g");
-
+ 
+  // Show comparison text
+  let comparisonTextEle = questionGroup.append("text")
+  .attr("x", 500)
+  .attr("y", 20)
+  .attr("dy", ".5em")
+  .style("text-anchor", "middle")
+  .attr("font-size", "20px")
+  .text("Is " + circleAValue + " < " + circleBValue + " ?");
 
   // Determine outcome text
   // A realist's assumption
-  let outcomeColor = "red";
-  let outcomeText = "Nope, save the new min!";
- 
+  let outcomeColor = "green";
+  let outcomeText = "Yes, do nothing!";
 
-  if(circleAValue < circleBValue){
-    outcomeColor = "green";
-    outcomeText = "Yes, do nothing!";
-  } else {
+  // Test if a new min has been found
+  if(circleAValue > circleBValue){
+    outcomeColor = "red";
+    outcomeText = "Nope, save the new min!";
     minText.transition()
-    .delay(thoughtTimeDelay)
-    // .remove()
-    .text("Min is " + circleAValue);
+    .delay(thoughtTimeDelay + 300)
+    .text("Current Min: " + circleBValue);
   }
-
-  // Show comparison text
-  let comparisonTextEle = questionGroup.append("text")
-                      .attr("x", 500)
-                      .attr("y", 20)
-                      .attr("dy", ".5em")
-                      .style("text-anchor", "middle")
-                      .attr("font-size", "20px")
-                      .text("Is " + circleAValue + " < " + circleBValue + " ?");
 
   // Create text area for outcome of comparison
   let outcomeTextEle = questionGroup.append("text")
@@ -221,9 +253,9 @@ function drawSelectionLogic(canvas, circleObject1, circleObject2){
           .delay(removalDelay)
           .remove();
   
-  minText.transition()
-        .delay(removalDelay)
-        .remove();
+  // minText.transition()
+  //       .delay(removalDelay)
+  //       .remove();
   
   return(removalDelay);
 }
@@ -527,8 +559,8 @@ function getSelectionSortMoves(weightsArray){
     //TODO: Javascript enum class? for actions
     // Stores the swap step
     let algorithmStep = {
-      indexA: i,
-      indexB: minIndex,
+      indexA: minIndex,
+      indexB: i,
       action: "swap"
     }
     algorithmSteps.push(algorithmStep)
@@ -565,7 +597,7 @@ $('#selection-sort-start').click(function(){
   //Kick off animation
   let selectionSortMoves = getSelectionSortMoves(selectionSortWeights);
 
-  selectionSortAnimation(selectionSortCanvas, 0, selectionSortMoves);
+  selectionSortAnimation(selectionSortCanvas, selectionSortMoves);
   
 })
 
