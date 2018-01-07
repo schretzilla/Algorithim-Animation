@@ -1,13 +1,11 @@
 //global vars
 let startYCord = 150;
 let startXCord = 50;
-let maxRadius = 40;
-let moveDuration = 500;
-let circleObjectList = [];
 
-// TODO: This is an ugly way to stop recurssion
-// An ugly global flag to stop recurssion from happening on animation restarts
-let restartAnimation = false; 
+// The max radius for any circle object
+let maxRadius = 40;
+let bubbleSortObjects = [];
+
 //build canvas
 var canvas = d3.select("#canvas-area")
         .append("svg")
@@ -20,34 +18,18 @@ let weightsArray = generateRandomArrayWeights();
 for(let i=0; i<10; i++){
   let circleSize = weightsArray[i];
   let circleEle = createCircleEle(i, circleSize);
-  circleObjectList.push(circleEle);
+  bubbleSortObjects.push(circleEle);
 }
 
 //Generate the weights array then pass it to the workers
 console.log(weightsArray);
 // let insertionSortMoves = getInsertionSortMoves(weightsArray);
 
-
-
-
-
 //Creates a circle element in a line along the designated x axis
 function createCircleEle(eleStartIndex, circleSize){
   let circleXCord = startXCord + (eleStartIndex* 2 * maxRadius);
 
   //TODO use group instead of object class to reduce code
-  // let groupTest = canvas.append("g");
-
-  // groupTest.append("circle")
-  //           .attr("cx", 20)
-  //           .attr("cy", 20)
-  //           .attr("r", 30);
-  
-  // let xtest = 500;
-  // groupTest.transition()
-  //       .duration(1000)  
-  //       .attr("transform", "translate(0, " + xtest + ")");
-
   let circleEle = canvas.append("circle")
                     .attr("cx", circleXCord)
                     .attr("cy", startYCord)
@@ -72,24 +54,8 @@ function createCircleEle(eleStartIndex, circleSize){
 // <algorithmSteps> the list of steps that were made during the sort
 function animate(algorithmSteps){
   let curAlgoritmStep = algorithmSteps[0];
-  let circle1 = circleObjectList[curAlgoritmStep.indexA].circleElement;
-  let circle2 = circleObjectList[curAlgoritmStep.indexB].circleElement;
-
-  // drawIdentifierDots(circle1, circle2);
-  // let itemA = algorithmSteps[0].indexA;
-  // let itemB = algorithmSteps[0].indexB;
-
-  // let currentMoves = algorithmSteps[0];
-  // let circle1Index = currentMoves[0];
-  // let circle2Index = currentMoves[1];
-  // let circle1 = circleObjectList[circle1Index];
-  // let circle2 = circleObjectList[circle2Index];
-  
-  // //Update the circleslist
-  // circleObjectList[circle1Index] = circle2;
-  // circleObjectList[circle2Index] = circle1;
-
-  // animationLoop(circle1, circle2, 1, algorithmSteps);
+  let circle1 = bubbleSortObjects[curAlgoritmStep.indexA].circleElement;
+  let circle2 = bubbleSortObjects[curAlgoritmStep.indexB].circleElement;
 
   animateLoop(0, algorithmSteps);
 }
@@ -101,8 +67,8 @@ function animateLoop(stepIndex, stepList){
 
   let circle1Index = curAlgoritmStep.indexA;
   let circle2Index = curAlgoritmStep.indexB;
-  let circle1 = circleObjectList[circle1Index];
-  let circle2 = circleObjectList[circle2Index];
+  let circle1 = bubbleSortObjects[circle1Index];
+  let circle2 = bubbleSortObjects[circle2Index];
 
   let comparisonDelayTime = drawIdentifierDots(circle1, circle2);
 
@@ -112,8 +78,8 @@ function animateLoop(stepIndex, stepList){
       swapDelayTime = swapPlaces(circle1, circle2, 0);
 
       //Update the circleslist
-      circleObjectList[circle1Index] = circle2;
-      circleObjectList[circle2Index] = circle1;
+      bubbleSortObjects[circle1Index] = circle2;
+      bubbleSortObjects[circle2Index] = circle1;
       console.log('swapping ' + circle1Index + ' with ' + circle2Index);
     }
 
@@ -125,8 +91,8 @@ function animateLoop(stepIndex, stepList){
 
   }, comparisonDelayTime);
 
-
 }
+
 
 function drawIdentifierDots(circleObject1, circleObject2){
   let distanceAbove = -60;
@@ -202,6 +168,9 @@ function drawIdentifierDots(circleObject1, circleObject2){
 
 //Swap the position of the two circle elements
 function swapPlaces(circleObject1, circleObject2){
+  // The time it takes for one movement
+  let moveDuration = 500;
+
   // The displaced y position where cirlce1's swaps will occure
   let stagingYCord1 = 200;
   // The displaced y position where circleElement2's swaps will occure
