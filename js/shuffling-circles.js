@@ -138,20 +138,11 @@ function drawIdentifierDots(circleObject1, circleObject2){
                   .text("No, Don't swap!");
   }
 
-  //Identifier object group setup
   let identifierGroup = canvas.append("g");
 
-  let identifierEle1 = identifierGroup.append("circle")
-                    .attr("cx", circle1.attr("cx"))
-                    .attr("cy", startYCord + distanceAbove)
-                    .attr("r", identiferSize)
-                    .attr("fill", "red");
-  
-  let identifierEle2 = identifierGroup.append("circle")
-                    .attr("cx", circle2.attr("cx"))
-                    .attr("cy", startYCord + distanceAbove)
-                    .attr("r", identiferSize)
-                    .attr("fill", "green");
+  // Draw identifier arrows
+  createIdentifierArrow(identifierGroup, circle1);
+  createIdentifierArrow(identifierGroup, circle2);
 
   // Remove the Identifier group object
   identifierGroup.transition()
@@ -164,6 +155,38 @@ function drawIdentifierDots(circleObject1, circleObject2){
           .remove();
   
   return(removalDelay);
+}
+
+// Draws an identifier arrow above the provided circle
+function createIdentifierArrow(group, circle){
+  let lineLength = 30;
+  let pointerArrowDisplacement = 12;
+  let lineThickness = 4;
+  let distanceAbove = -60;
+
+
+  let lineMiddle1 = group.append("line")
+    .attr("x1", circle.attr("cx"))
+    .attr("y1", parseInt(circle.attr("cy")) + distanceAbove)
+    .attr("x2", circle.attr("cx"))
+    .attr("y2", parseInt(circle.attr("cy")) + distanceAbove - lineLength)
+    .attr("stroke-width", lineThickness)
+    .attr("stroke", "black");
+  let lineLeft1 = group.append("line")
+    .attr("x1", parseInt(circle.attr("cx"))  + 1)
+    .attr("y1", parseInt(circle.attr("cy")) + distanceAbove)
+    .attr("x2", parseInt(circle.attr("cx")) - pointerArrowDisplacement) 
+    .attr("y2", parseInt(circle.attr("cy")) + distanceAbove - lineLength/2)
+    .attr("stroke-width", lineThickness)
+    .attr("stroke", "black");
+
+  let lineRight1 = group.append("line")
+    .attr("x1", circle.attr("cx") - 1)
+    .attr("y1", parseInt(circle.attr("cy")) + distanceAbove)
+    .attr("x2", parseInt(circle.attr("cx")) + pointerArrowDisplacement) 
+    .attr("y2", parseInt(circle.attr("cy")) + distanceAbove - lineLength/2)
+    .attr("stroke-width", lineThickness)
+    .attr("stroke", "black");
 }
 
 //Swap the position of the two circle elements
