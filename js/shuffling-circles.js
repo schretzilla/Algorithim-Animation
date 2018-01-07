@@ -50,16 +50,10 @@ function createCircleEle(eleStartIndex, circleSize){
   return circleObject;
 }
 
-// Kicks off the recursive animation for swap lists
-// <algorithmSteps> the list of steps that were made during the sort
-function animate(algorithmSteps){
-  let curAlgoritmStep = algorithmSteps[0];
-  let circle1 = bubbleSortObjects[curAlgoritmStep.indexA].circleElement;
-  let circle2 = bubbleSortObjects[curAlgoritmStep.indexB].circleElement;
-
-  animateLoop(0, algorithmSteps);
-}
-
+// TODO: Passing index could be replaced by poping the steps off the stepList
+// Recrusive function to animate the steps of the algorithm
+// stepIndex: the current step of the algorithm
+// stepList: the total list of steps in the algorithm
 function animateLoop(stepIndex, stepList){
   curAlgoritmStep = stepList[stepIndex];
   console.log("index A: " + curAlgoritmStep.indexA);
@@ -70,7 +64,7 @@ function animateLoop(stepIndex, stepList){
   let circle1 = bubbleSortObjects[circle1Index];
   let circle2 = bubbleSortObjects[circle2Index];
 
-  let comparisonDelayTime = drawIdentifierDots(circle1, circle2);
+  let comparisonDelayTime = drawLogic(circle1, circle2);
 
   d3.timeout(function(){
     let swapDelayTime = 500;
@@ -93,8 +87,8 @@ function animateLoop(stepIndex, stepList){
 
 }
 
-
-function drawIdentifierDots(circleObject1, circleObject2){
+// Draws out the logic that happens in the comparison of the provided circle objects
+function drawLogic(circleObject1, circleObject2){
   let distanceAbove = -60;
   let identiferSize = 10;
   let removalDelay = 2000;
@@ -109,6 +103,16 @@ function drawIdentifierDots(circleObject1, circleObject2){
   //create group element
   let questionGroup = canvas.append("g");
 
+
+  // Determine outcome text
+  // A realist's assumption
+  let outcomeColor = "red";
+  let outcomeText = "No, Don't swap!";
+  if(circleAValue > circleBValue){
+    outcomeColor = "green";
+    outcomeText = "Yes, so swap!";
+  }
+
   // Show comparison text
   let comparisonTextEle = questionGroup.append("text")
                       .attr("x", 500)
@@ -120,24 +124,17 @@ function drawIdentifierDots(circleObject1, circleObject2){
 
   // Create text area for outcome of comparison
   let outcomeTextEle = questionGroup.append("text")
+                    .style("fill", outcomeColor)
                     .transition()
                     .delay(thoughtTimeDelay)
                     .attr("x", 500)
                     .attr("y", 45)
                     .attr("dy", ".5em")
                     .style("text-anchor", "middle")
-                    .attr("font-size", "20px");
+                    .attr("font-size", "20px")
+                    .text(outcomeText);
 
-  // Determine outcome text
-  if(circleAValue > circleBValue){
-    outcomeTextEle.style("fill", "green")
-                  .text("Yes, so swap!");
-  }
-  else{
-    outcomeTextEle.style("fill", "red")
-                  .text("No, Don't swap!");
-  }
-
+  // The group for the identifier arrows
   let identifierGroup = canvas.append("g");
 
   // Draw identifier arrows
@@ -158,12 +155,20 @@ function drawIdentifierDots(circleObject1, circleObject2){
 }
 
 // Draws an identifier arrow above the provided circle
+// group: the group to append the arrow to
+// circle: the circle to point down to
 function createIdentifierArrow(group, circle){
   let lineLength = 30;
+
+  // The distance from the middle line and its wings
   let pointerArrowDisplacement = 12;
   let lineThickness = 4;
+  // The distance above the circles
   let distanceAbove = -60;
+  // Displacement used to give the arrow more of a point
+  let arrowPointDisplacement = 1;
 
+  let arrowColor = "black";
 
   let lineMiddle1 = group.append("line")
     .attr("x1", circle.attr("cx"))
@@ -171,22 +176,23 @@ function createIdentifierArrow(group, circle){
     .attr("x2", circle.attr("cx"))
     .attr("y2", parseInt(circle.attr("cy")) + distanceAbove - lineLength)
     .attr("stroke-width", lineThickness)
-    .attr("stroke", "black");
+    .attr("stroke", arrowColor);
+
   let lineLeft1 = group.append("line")
-    .attr("x1", parseInt(circle.attr("cx"))  + 1)
+    .attr("x1", parseInt(circle.attr("cx"))  + arrowPointDisplacement) 
     .attr("y1", parseInt(circle.attr("cy")) + distanceAbove)
     .attr("x2", parseInt(circle.attr("cx")) - pointerArrowDisplacement) 
     .attr("y2", parseInt(circle.attr("cy")) + distanceAbove - lineLength/2)
     .attr("stroke-width", lineThickness)
-    .attr("stroke", "black");
+    .attr("stroke", arrowColor);
 
   let lineRight1 = group.append("line")
-    .attr("x1", circle.attr("cx") - 1)
+    .attr("x1", circle.attr("cx") - arrowPointDisplacement)
     .attr("y1", parseInt(circle.attr("cy")) + distanceAbove)
     .attr("x2", parseInt(circle.attr("cx")) + pointerArrowDisplacement) 
     .attr("y2", parseInt(circle.attr("cy")) + distanceAbove - lineLength/2)
     .attr("stroke-width", lineThickness)
-    .attr("stroke", "black");
+    .attr("stroke", arrowColor);
 }
 
 //Swap the position of the two circle elements
@@ -364,7 +370,7 @@ $('#bubble-sort-start').click(function(){
   $('#bubble-sort-start').addClass("disabled", true);
   //Kick off the animation
   let bubbleSortMoves = getBubbleSortMoves(weightsArray);
-  animate(bubbleSortMoves);
+  animateLoop(0, bubbleSortMoves);
 } );
 
 // TODO: Implement way to restart algorithm
