@@ -15,17 +15,17 @@ var canvas = d3.select("#canvas-area")
         .attr("width", 1000)
         .attr("height", 400);
 
-let weightsArray = generateRandomArrayWeights();
+let bubbleSortWeightsArray = generateRandomArrayWeights();
+let selectionSortWeights = generateRandomArrayWeights();
+getSelectionSortMoves(bubbleSortWeightsArray);
 
 //Create all desired circles for sorting
 for(let i=0; i<10; i++){
-  let circleSize = weightsArray[i];
+  let circleSize = bubbleSortWeightsArray[i];
   let circleEle = createCircleEle(i, circleSize);
   bubbleSortObjects.push(circleEle);
 }
 
-//Generate the weights array then pass it to the workers
-console.log(weightsArray);
 // let insertionSortMoves = getInsertionSortMoves(weightsArray);
 
 //Creates a circle element in a line along the designated x axis
@@ -360,6 +360,30 @@ function getBubbleSortMoves(weightsArray){
   console.log("Bubble sort result " + weightsArray);
   // console.log("Bubble sort's moves: " + algorithmSteps);
   return algorithmSteps;
+}
+
+function getSelectionSortMoves(weightsArray){
+  console.log("SelectionSort Start: " + weightsArray);
+
+  for(let i=0; i<weightsArray.length-1; i++){
+    let minIndex = i;    
+    let minWeight = weightsArray[minIndex];
+    for(let j=i; j<weightsArray.length-1; j++){
+      let nextWeight = weightsArray[j+1];
+      if(minWeight > nextWeight){
+        // Update the minimum
+        minIndex = j+1; 
+        minWeight = weightsArray[minIndex];
+      }
+    }
+
+    //swap the min's index
+    let valueToMove = weightsArray[i];
+    weightsArray[i] = minWeight;
+    weightsArray[minIndex] = valueToMove;
+  }
+
+  console.log("Selection Start Finish: " + weightsArray);
 }
 
 //Adds random fill color to an svg attribute
