@@ -6,35 +6,41 @@ let startXCord = 50;
 // The max radius for any circle object
 let maxRadius = 50;
 
-// Bubble sorts circles to be sorted
-let bubbleSortObjects = [];
 
 //build canvas
 var bubbleCanvas = d3.select("#canvas-area")
-        .append("svg")
-        .attr("width", 1000)
-        .attr("height", 400);
+                    .append("svg")
+                    .attr("width", 1000)
+                    .attr("height", 400);
+
+// Create and draw bubble collection of circles to be sorted
+let bubbleSortWeightsArray = generateRandomArrayWeights();
+let bubbleSortObjects = drawCircles(bubbleCanvas, 10, bubbleSortWeightsArray);
+
 
 var selectionSortCanvas = d3.select("#selection-sort-canvas")
-        .append("svg")
-        .attr("width", 1000)
-        .attr("height", 400);
+                            .append("svg")
+                            .attr("width", 1000)
+                            .attr("height", 400);
 
-let bubbleSortWeightsArray = generateRandomArrayWeights();
+// Create and draw selection sorts collection of circles to be sorted
 let selectionSortWeights = generateRandomArrayWeights();
-
-drawCircles(bubbleCanvas, 10, bubbleSortWeightsArray);
-
-drawCircles(selectionSortCanvas, 10, selectionSortWeights);
-//Create all desired circles for sorting
+let selectionSortObjects = drawCircles(selectionSortCanvas, 10, selectionSortWeights);
 
 
+// Draw circles onto a canvas
+// canvas: The canvas to draw onto
+// numberOfCircles: Number of circles to draw
+// weightsArray: the list of circles weights
 function drawCircles(canvas, numberOfCircles, weightsArray){
+  let createdCirclesObjs = [];
   for(let i=0; i<numberOfCircles; i++){
     let circleSize = weightsArray[i];
     let circleEle = createCircleEle(canvas, i, circleSize);
-    bubbleSortObjects.push(circleEle);
+    createdCirclesObjs.push(circleEle);
   }
+
+  return createdCirclesObjs;
 }
 
 //Creates a circle element in a line along the designated x axis
@@ -74,6 +80,7 @@ function animateLoop(canvas, stepIndex, stepList){
 
   let circle1Index = curAlgoritmStep.indexA;
   let circle2Index = curAlgoritmStep.indexB;
+  // TODO: pass in the list of objects to sort, don't use global
   let circle1 = bubbleSortObjects[circle1Index];
   let circle2 = bubbleSortObjects[circle2Index];
 
@@ -82,7 +89,7 @@ function animateLoop(canvas, stepIndex, stepList){
   d3.timeout(function(){
     let swapDelayTime = 500;
     if(curAlgoritmStep.swapRequired){
-      swapDelayTime = swapPlaces(circle1, circle2, 0);
+      swapDelayTime = swapPlaces(circle1, circle2);
 
       //Update the circleslist
       bubbleSortObjects[circle1Index] = circle2;
@@ -98,6 +105,127 @@ function animateLoop(canvas, stepIndex, stepList){
 
   }, comparisonDelayTime);
 
+}
+
+function selectionSortAnimation(canvas, stepIndex, stepList){
+  curAlgoritmStep = stepList[stepIndex];
+
+  let circle1Index = curAlgoritmStep.indexA;
+  let circle2Index = curAlgoritmStep.indexB;
+  // TODO: pass in the list of objects to sort, don't use global
+  let circle1 = selectionSortObjects[circle1Index];
+  let circle2 = selectionSortObjects[circle2Index];
+
+  let comparisonDelayTime = drawSelectionLogic(canvas, circle1, circle2);
+
+  d3.timeout(function(){
+    let swapDelayTime = 500;
+    if(curAlgoritmStep.action == "swap"){
+      swapDelayTime = swapPlaces(circle1, circle2);
+
+      //Update the circleslist
+      selectionSortObjects[circle1Index] = circle2;
+      selectionSortObjects[circle2Index] = circle1;
+      console.log('swapping ' + circle1Index + ' with ' + circle2Index);
+    }
+
+    d3.timeout(function(){
+      if(stepIndex < stepList.length-1){
+        selectionSortAnimation(canvas, stepIndex+1, stepList);
+      }
+    }, swapDelayTime);
+
+  }, comparisonDelayTime);
+}
+
+//TODO combine with draw logic
+function drawSelectionLogic(canvas, circleObject1, circleObject2){
+  let distanceAbove = -60;
+  let identiferSize = 10;
+  let removalDelay = 2000;
+  let thoughtTimeDelay = 1000; //Time to delay before answering the comparison
+  let circle1 = circleObject1.circleElement;
+  let circle2 = circleObject2.circleElement;
+
+  //Draw text
+  let circleAValue = circleObject1.textElement.text();
+  let circleBValue = circleObject2.textElement.text();
+
+  // update min text
+  let minText = canvas.append("text")
+                      .attr("x", 40)
+                      .attr("y", 10)
+                      .attr("dy", ".5em")
+                      .style("text-anchor", "left")
+                      .attr("font-size", "20px")
+                      .text("Min is " + circleBValue);
+
+  //create group element
+  let questionGroup = canvas.append("g");
+
+
+  // Determine outcome text
+  // A realist's assumption
+  let outcomeColor = "red";
+  let outcomeText = "Nope, save the new min!";
+ 
+
+  if(circleAValue < circleBValue){
+    outcomeColor = "green";
+    outcomeText = "Yes, do nothing!";
+  } else {
+    minText.transition()
+    .delay(thoughtTimeDelay)
+    // .remove()
+    .text("Min is " + circleAValue);
+  }
+
+  // Show comparison text
+  let comparisonTextEle = questionGroup.append("text")
+                      .attr("x", 500)
+                      .attr("y", 20)
+                      .attr("dy", ".5em")
+                      .style("text-anchor", "middle")
+                      .attr("font-size", "20px")
+                      .text("Is " + circleAValue + " < " + circleBValue + " ?");
+
+  // Create text area for outcome of comparison
+  let outcomeTextEle = questionGroup.append("text")
+                    .style("fill", outcomeColor)
+                    .transition()
+                    .delay(thoughtTimeDelay)
+                    .attr("x", 500)
+                    .attr("y", 45)
+                    .attr("dy", ".5em")
+                    .style("text-anchor", "middle")
+                    .attr("font-size", "20px")
+                    .text(outcomeText);
+
+  
+
+
+  // The group for the identifier arrows
+  let identifierGroup = canvas.append("g");
+
+  // Draw identifier arrows
+  createIdentifierArrow(identifierGroup, circle1);
+  createIdentifierArrow(identifierGroup, circle2);
+
+  // Remove the Identifier group object
+  identifierGroup.transition()
+                .delay(removalDelay)
+                .remove();
+
+  // Remove the question group
+  questionGroup.transition()
+          .delay(removalDelay)
+          .remove();
+  
+  minText.transition()
+        .delay(removalDelay)
+        .remove();
+  
+  return(removalDelay);
 }
 
 // Draws out the logic that happens in the comparison of the provided circle objects
@@ -373,19 +501,38 @@ function getBubbleSortMoves(weightsArray){
 
 function getSelectionSortMoves(weightsArray){
   console.log("SelectionSort Start: " + weightsArray);
+  //Stores all the algorithm steps
+  let algorithmSteps = [];
 
   for(let i=0; i<weightsArray.length-1; i++){
     let minIndex = i;    
     let minWeight = weightsArray[minIndex];
     for(let j=i; j<weightsArray.length-1; j++){
+      let algorithmStep = {
+        indexA: minIndex,
+        indexB: j+1,
+        action: "none",
+      }
+
       let nextWeight = weightsArray[j+1];
       if(minWeight > nextWeight){
         // Update the minimum
         minIndex = j+1; 
         minWeight = weightsArray[minIndex];
+        algorithmStep.action = "new min";
       }
+      algorithmSteps.push(algorithmStep);
     }
 
+    //TODO: Javascript enum class? for actions
+    // Stores the swap step
+    let algorithmStep = {
+      indexA: i,
+      indexB: minIndex,
+      action: "swap"
+    }
+    algorithmSteps.push(algorithmStep)
+    
     //swap the min's index
     let valueToMove = weightsArray[i];
     weightsArray[i] = minWeight;
@@ -393,6 +540,7 @@ function getSelectionSortMoves(weightsArray){
   }
 
   console.log("Selection Start Finish: " + weightsArray);
+  return algorithmSteps;
 }
 
 //Adds random fill color to an svg attribute
@@ -410,12 +558,14 @@ $('#bubble-sort-start').click(function(){
   animateLoop(bubbleCanvas, 0, bubbleSortMoves);
 } );
 
-$('#selction-sort-start').click(function(){
+$('#selection-sort-start').click(function(){
   console.log("Start Selction Sort Animation");
   $('#selection-sort-start').addClass("disabled", true);
 
   //Kick off animation
   let selectionSortMoves = getSelectionSortMoves(selectionSortWeights);
+
+  selectionSortAnimation(selectionSortCanvas, 0, selectionSortMoves);
   
 })
 
