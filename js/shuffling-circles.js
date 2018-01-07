@@ -1,9 +1,12 @@
 //global vars
+// Starting coordinates for all circles
 let startYCord = 150;
 let startXCord = 50;
 
 // The max radius for any circle object
-let maxRadius = 40;
+let maxRadius = 50;
+
+// Bubble sorts circles to be sorted
 let bubbleSortObjects = [];
 
 //build canvas
@@ -14,7 +17,7 @@ var canvas = d3.select("#canvas-area")
 
 let weightsArray = generateRandomArrayWeights();
 
-//Create 10 circles
+//Create all desired circles for sorting
 for(let i=0; i<10; i++){
   let circleSize = weightsArray[i];
   let circleEle = createCircleEle(i, circleSize);
@@ -27,7 +30,8 @@ console.log(weightsArray);
 
 //Creates a circle element in a line along the designated x axis
 function createCircleEle(eleStartIndex, circleSize){
-  let circleXCord = startXCord + (eleStartIndex* 2 * maxRadius);
+  // The current circle's x coordinate
+  let circleXCord = startXCord + (eleStartIndex * 2 * maxRadius);
 
   //TODO use group instead of object class to reduce code
   let circleEle = canvas.append("circle")
