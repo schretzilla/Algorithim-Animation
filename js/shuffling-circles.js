@@ -1,3 +1,5 @@
+// TODO: make step through process for user
+
 //global vars
 // Starting coordinates for all circles
 let startYCord = 150;
