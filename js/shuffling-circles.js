@@ -84,18 +84,19 @@ function createCircleEle(canvas, eleStartIndex, circleSize){
 // Recrusive function to animate the steps of the algorithm
 // stepIndex: the current step of the algorithm
 // stepList: the total list of steps in the algorithm
-function animateLoop(canvas, stepIndex, stepList, circleObjects){
+// compareForward: the direction to compare logic in. True if comparing n < n - 1
+function animateLoop(canvas, stepIndex, stepList, circleObjects, compareForward){
   curAlgoritmStep = stepList[stepIndex];
   console.log("index A: " + curAlgoritmStep.indexA);
   console.log("index B: " + curAlgoritmStep.indexB);
 
   let circle1Index = curAlgoritmStep.indexA;
   let circle2Index = curAlgoritmStep.indexB;
-  // TODO: pass in the list of objects to sort, don't use global
+
   let circle1 = circleObjects[circle1Index];
   let circle2 = circleObjects[circle2Index];
 
-  let comparisonDelayTime = drawLogic(canvas, circle1, circle2);
+  let comparisonDelayTime = drawLogic(canvas, circle1, circle2, compareForward);
 
   d3.timeout(function(){
     let swapDelayTime = 500;
@@ -110,7 +111,7 @@ function animateLoop(canvas, stepIndex, stepList, circleObjects){
 
     d3.timeout(function(){
       if(stepIndex < stepList.length-1){
-        animateLoop(canvas, stepIndex+1, stepList, circleObjects);
+        animateLoop(canvas, stepIndex+1, stepList, circleObjects, compareForward);
       }
     }, swapDelayTime);
 
@@ -269,7 +270,8 @@ function drawSelectionLogic(canvas, circleObject1, circleObject2, minText){
 }
 
 // Draws out the logic that happens in the comparison of the provided circle objects
-function drawLogic(canvas, circleObject1, circleObject2){
+// compareForward: Compare if element n < n + 1
+function drawLogic(canvas, circleObject1, circleObject2, compareForward){
   let distanceAbove = -60;
   let identiferSize = 10;
   let removalDelay = 2000;
@@ -277,7 +279,7 @@ function drawLogic(canvas, circleObject1, circleObject2){
   let circle1 = circleObject1.circleElement;
   let circle2 = circleObject2.circleElement;
 
-  //Drawl text
+  //Draw text
   let circleAValue = circleObject1.textElement.text();
   let circleBValue = circleObject2.textElement.text();
 
@@ -289,7 +291,92 @@ function drawLogic(canvas, circleObject1, circleObject2){
   // A realist's assumption
   let outcomeColor = "red";
   let outcomeText = "No, Don't swap!";
-  if(circleAValue > circleBValue){
+
+  //TODO: Get rid of this flag stuff  
+  //Compare text for either forward or backwords
+  let comparisonText = "";
+  if(compareForward)
+  {
+    // Compare forward
+    comparisonText = "Is " + circleAValue + " > " + circleBValue + " ?"
+    if(circleAValue > circleBValue){
+      outcomeColor = "green";
+      outcomeText = "Yes, so swap!";
+    }
+  }
+  else
+  {
+    // Compare backwords
+    comparisonText = "Is " + circleAValue + " < " + circleBValue + " ?"
+    if(circleAValue < circleBValue){
+      outcomeColor = "green";
+      outcomeText = "Yes, so swap!";
+    }
+  }
+
+  // Show comparison text
+  let comparisonTextEle = questionGroup.append("text")
+                      .attr("x", 500)
+                      .attr("y", 20)
+                      .attr("dy", ".5em")
+                      .style("text-anchor", "middle")
+                      .attr("font-size", "20px")
+                      .text(comparisonText);
+
+  // Create text area for outcome of comparison
+  let outcomeTextEle = questionGroup.append("text")
+                    .style("fill", outcomeColor)
+                    .transition()
+                    .delay(thoughtTimeDelay)
+                    .attr("x", 500)
+                    .attr("y", 45)
+                    .attr("dy", ".5em")
+                    .style("text-anchor", "middle")
+                    .attr("font-size", "20px")
+                    .text(outcomeText);
+
+  // The group for the identifier arrows
+  let identifierGroup = canvas.append("g");
+
+  // Draw identifier arrows
+  createIdentifierArrow(identifierGroup, circle1);
+  createIdentifierArrow(identifierGroup, circle2);
+
+  // Remove the Identifier group object
+  identifierGroup.transition()
+                .delay(removalDelay)
+                .remove();
+
+  // Remove the question group
+  questionGroup.transition()
+          .delay(removalDelay)
+          .remove();
+  
+  return(removalDelay);
+}
+
+// Draws out the logic that happens in the comparison of the provided circle objects
+function insertionSortAnimationogic(canvas, circleObject1, circleObject2){
+  let distanceAbove = -60;
+  let identiferSize = 10;
+  let removalDelay = 2000;
+  let thoughtTimeDelay = 1000; //Time to delay before answering the comparison
+  let circle1 = circleObject1.circleElement;
+  let circle2 = circleObject2.circleElement;
+
+  //Draw text
+  let circleAValue = circleObject1.textElement.text();
+  let circleBValue = circleObject2.textElement.text();
+
+  //create group element
+  let questionGroup = canvas.append("g");
+
+
+  // Determine outcome text
+  // A realist's assumption
+  let outcomeColor = "red";
+  let outcomeText = "No, Don't swap!";
+  if(circleAValue < circleBValue){
     outcomeColor = "green";
     outcomeText = "Yes, so swap!";
   }
@@ -301,7 +388,7 @@ function drawLogic(canvas, circleObject1, circleObject2){
                       .attr("dy", ".5em")
                       .style("text-anchor", "middle")
                       .attr("font-size", "20px")
-                      .text("Is " + circleAValue + " > " + circleBValue + " ?");
+                      .text("Is " + circleAValue + " < " + circleBValue + " ?");
 
   // Create text area for outcome of comparison
   let outcomeTextEle = questionGroup.append("text")
@@ -658,7 +745,7 @@ $('#bubble-sort-start').click(function(){
   $('#bubble-sort-start').addClass("disabled", true);
   //Kick off the animation
   let bubbleSortMoves = getBubbleSortMoves(bubbleSortWeightsArray);
-  animateLoop(bubbleCanvas, 0, bubbleSortMoves, bubbleSortObjects);
+  animateLoop(bubbleCanvas, 0, bubbleSortMoves, bubbleSortObjects, true);
 } );
 
 $('#selection-sort-start').click(function(){
@@ -679,7 +766,7 @@ $('#insertion-sort-start').click(function(){
   $('#insertion-sort-start').addClass("disabled", true);
   //Kick off the animation
   let insertionSortMoves = getInsertionSortMoves(insertionSortWeightsArray);
-  animateLoop(insertionSortCanvas, 0, insertionSortMoves, insertionSortObjects);
+  animateLoop(insertionSortCanvas, 0, insertionSortMoves, insertionSortObjects, false);
 } );
 
 // TODO: Implement way to restart algorithm
