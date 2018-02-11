@@ -579,6 +579,13 @@ function getRandomColor(){
   return "hsl(" + Math.random() * 360 + ",100%,50%)"
 }
 
+$('#bubble-sort-hide').click(function(){
+  $('#bubble-sort-div').hide();
+});
+
+$('#bubble-sort-show').click(function(){
+  $('#bubble-sort-div').show();
+});
 // Event listener for Bubble-sort start click
 // Kicks off the animatio for buble sort
 $('#bubble-sort-start').click(function(){

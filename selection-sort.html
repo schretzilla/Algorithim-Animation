@@ -51,13 +51,15 @@
     </div>
 
     <ul class="nav nav-pills">
-      <li role="presentation" class="active"><a href="#">Bubble Sort</a></li>
-      <li role="presentation"><a href="selection-sort.html">Selection Sort</a></li>
+      <li role="presentation"><a href="shuffling-circles.html">Bubble Sort</a></li>
+      <li role="presentation" class="active"><a href="#">Selection Sort</a></li>
     </ul>
 
-    <!-- Bubble Sort -->
+    <!-- Selection Sort -->
     <div class="row">
-      <h1 class="text-center">Bubble Sort</h1>
+      <h1 class="text-center">Selection Sort</h1>
+      
+      <!-- Complexity Section -->
       <h4 class="text-center">
         <ul class="list-inline">
           <li class="list-inline-item">
@@ -68,34 +70,32 @@
           </li>
         </ul>
       </h4>
-      <p class="lead">"Bubble sort, sometimes referred to as sinking sort, is a 
-        simple sorting algorithm that repeatedly steps through the list to be 
-        sorted, compares each pair of adjacent items and swaps them if they are 
-        in the wrong order. The pass through the list is repeated until no swaps
-        are needed, which indicates that the list is sorted. The algorithm, 
-        which is a comparison sort, is named for the way smaller or larger 
-        elements "bubble" to the top of the list. Although the algorithm is 
-        simple, it is too slow and impractical for most problems even when 
-        compared to insertion sort."</p>
-        <p class="pull-right"><a href="https://en.wikipedia.org/wiki/Bubble_sort">-source</a></p>
+      
+      <p class="lead">"The algorithm proceeds by finding the smallest (or largest, 
+        depending on sorting order) element in the unsorted sublist, exchanging 
+        (swapping) it with the leftmost unsorted element (putting it in sorted 
+        order), and moving the sublist boundaries one element to the right."
+      </p>
+
+      <p class="pull-right"><a href="https://en.wikipedia.org/wiki/Selection_sort">-source</a></p>
         
     </div>
-
-    <!-- Bubble Sort Graphics -->
-    <div id="bubble-sort-div" class="row">
+    
+    <!-- Selection Sort Graphics -->
+    <div class="row">
       <div class="col-sm-offset-5 col-sm-2 text-center">
         <div class="btn-group" role="group">
-          <button id="bubble-sort-start" type="button" class="btn btn-lg btn-primary">Start Animation</button>
+          <button id="selection-sort-start" type="button" class="btn btn-lg btn-primary">Start Animation</button>
         </div>
       </div>
-      <div id="canvas-area" class="center-block">
+      <div id="selection-sort-canvas" class="center-block">
           <!-- Canvas Div Area -->
       </div>
 
     </div>
   
-  </div> <!-- End Container -->
-  
+  </div> <!-- End container -->
+    
 <!-- Jquery -->
 <script src="./js/jquery-1.12.4.min.js"></script>
 <!-- Bootstrap JS -->
