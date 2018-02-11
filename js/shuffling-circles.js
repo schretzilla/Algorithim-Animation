@@ -292,7 +292,7 @@ function drawLogic(canvas, circleObject1, circleObject2, compareForward){
   let outcomeColor = "red";
   let outcomeText = "No, Don't swap!";
 
-  //TODO: Get rid of this flag stuff  
+  //TODO: Get rid of this flag stuff. Likely would have to play with j- index in insertion sort
   //Compare text for either forward or backwords
   let comparisonText = "";
   if(compareForward)
@@ -658,10 +658,7 @@ function getInsertionSortMoves(weightsArray){
         // Set algorithm step to show the swap
         algorithmStep.swapRequired = true;
       }
-      // else
-      // {
-      //   break;
-      // }
+      // Could break out early in else case here but it might make the animation less clear
 
       // push onto algorithm steps
       algorithmSteps.push(algorithmStep);
