@@ -10,7 +10,7 @@ let maxRadius = 50;
 
 
 //build canvas
-var bubbleCanvas = d3.select("#canvas-area")
+var bubbleCanvas = d3.select("#bubble-sort-canvas")
                     .append("svg")
                     .attr("width", 1000)
                     .attr("height", 400);
@@ -29,9 +29,15 @@ var selectionSortCanvas = d3.select("#selection-sort-canvas")
 let selectionSortWeights = generateRandomArrayWeights();
 let selectionSortObjects = drawCircles(selectionSortCanvas, 10, selectionSortWeights);
 
-let insertionSortWeights = generateRandomArrayWeights();
+//Insertion sort logic
+var insertionSortCanvas = d3.select("#insertion-sort-canvas")
+                            .append("svg")
+                            .attr("width", 1000)
+                            .attr("height", 400);
 
-getInsertionSortMoves(insertionSortWeights);
+let insertionSortWeightsArray = generateRandomArrayWeights();
+let insertionSortObjects = drawCircles(insertionSortCanvas, 10, insertionSortWeightsArray);
+
 
 // Draw circles onto a canvas
 // canvas: The canvas to draw onto
@@ -78,7 +84,7 @@ function createCircleEle(canvas, eleStartIndex, circleSize){
 // Recrusive function to animate the steps of the algorithm
 // stepIndex: the current step of the algorithm
 // stepList: the total list of steps in the algorithm
-function animateLoop(canvas, stepIndex, stepList){
+function animateLoop(canvas, stepIndex, stepList, circleObjects){
   curAlgoritmStep = stepList[stepIndex];
   console.log("index A: " + curAlgoritmStep.indexA);
   console.log("index B: " + curAlgoritmStep.indexB);
@@ -86,8 +92,8 @@ function animateLoop(canvas, stepIndex, stepList){
   let circle1Index = curAlgoritmStep.indexA;
   let circle2Index = curAlgoritmStep.indexB;
   // TODO: pass in the list of objects to sort, don't use global
-  let circle1 = bubbleSortObjects[circle1Index];
-  let circle2 = bubbleSortObjects[circle2Index];
+  let circle1 = circleObjects[circle1Index];
+  let circle2 = circleObjects[circle2Index];
 
   let comparisonDelayTime = drawLogic(canvas, circle1, circle2);
 
@@ -97,14 +103,14 @@ function animateLoop(canvas, stepIndex, stepList){
       swapDelayTime = swapPlaces(circle1, circle2);
 
       //Update the circleslist
-      bubbleSortObjects[circle1Index] = circle2;
-      bubbleSortObjects[circle2Index] = circle1;
+      circleObjects[circle1Index] = circle2;
+      circleObjects[circle2Index] = circle1;
       console.log('swapping ' + circle1Index + ' with ' + circle2Index);
     }
 
     d3.timeout(function(){
       if(stepIndex < stepList.length-1){
-        animateLoop(canvas, stepIndex+1, stepList);
+        animateLoop(canvas, stepIndex+1, stepList, circleObjects);
       }
     }, swapDelayTime);
 
@@ -544,7 +550,7 @@ function getInsertionSortMoves(weightsArray){
   // stores the list of each step taken in the algorithm
   let algorithmSteps = [];
 
-  console.log(weightsArray);
+  console.log("Insertion Sort Start " + weightsArray);
 
   for(let i=0; i<weightsArray.length; i++)
   {
@@ -554,7 +560,7 @@ function getInsertionSortMoves(weightsArray){
       // console.log("index B : " + int(j+1));
       let algorithmStep = {
         indexA: j,
-        indexB: j+1,
+        indexB: j-1,
         swapRequired: false
       }
 
@@ -565,10 +571,10 @@ function getInsertionSortMoves(weightsArray){
         // Set algorithm step to show the swap
         algorithmStep.swapRequired = true;
       }
-      else
-      {
-        break;
-      }
+      // else
+      // {
+      //   break;
+      // }
 
       // push onto algorithm steps
       algorithmSteps.push(algorithmStep);
@@ -576,7 +582,9 @@ function getInsertionSortMoves(weightsArray){
     }
   }
 
-  console.log(weightsArray);
+  console.log("Insertion sort results " + weightsArray);
+
+  return algorithmSteps;
 }
 
 // Swap the supplied array's index with it's previous index
@@ -643,13 +651,6 @@ function getRandomColor(){
   return "hsl(" + Math.random() * 360 + ",100%,50%)"
 }
 
-$('#bubble-sort-hide').click(function(){
-  $('#bubble-sort-div').hide();
-});
-
-$('#bubble-sort-show').click(function(){
-  $('#bubble-sort-div').show();
-});
 // Event listener for Bubble-sort start click
 // Kicks off the animatio for buble sort
 $('#bubble-sort-start').click(function(){
@@ -657,7 +658,7 @@ $('#bubble-sort-start').click(function(){
   $('#bubble-sort-start').addClass("disabled", true);
   //Kick off the animation
   let bubbleSortMoves = getBubbleSortMoves(bubbleSortWeightsArray);
-  animateLoop(bubbleCanvas, 0, bubbleSortMoves);
+  animateLoop(bubbleCanvas, 0, bubbleSortMoves, bubbleSortObjects);
 } );
 
 $('#selection-sort-start').click(function(){
@@ -670,6 +671,16 @@ $('#selection-sort-start').click(function(){
   selectionSortAnimation(selectionSortCanvas, selectionSortMoves);
   
 })
+
+// Event listener for Insertion-sort start click
+// Kicks off the animatio for buble sort
+$('#insertion-sort-start').click(function(){
+  console.log("start animation");
+  $('#insertion-sort-start').addClass("disabled", true);
+  //Kick off the animation
+  let insertionSortMoves = getInsertionSortMoves(insertionSortWeightsArray);
+  animateLoop(insertionSortCanvas, 0, insertionSortMoves, insertionSortObjects);
+} );
 
 // TODO: Implement way to restart algorithm
 // $('#bubble-sort-restart').click(function(){
