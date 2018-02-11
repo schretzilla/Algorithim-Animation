@@ -29,6 +29,9 @@ var selectionSortCanvas = d3.select("#selection-sort-canvas")
 let selectionSortWeights = generateRandomArrayWeights();
 let selectionSortObjects = drawCircles(selectionSortCanvas, 10, selectionSortWeights);
 
+let insertionSortWeights = generateRandomArrayWeights();
+
+getInsertionSortMoves(insertionSortWeights);
 
 // Draw circles onto a canvas
 // canvas: The canvas to draw onto
@@ -446,14 +449,21 @@ function swapPlaces(circleObject1, circleObject2){
   return 3*moveDuration;
 }
 
-//Generate random array of ints between 1-50
+//Generate random unqiue array of ints between 1-50
 function generateRandomArrayWeights(){
   let weightsArray = [];
   let maxValue = 40;
   let minValue = 10;
   for(let i=0; i<10; i++){
-    let newNum = Math.floor(Math.random() * maxValue) + minValue;
+    let newNum;
+    //confirm that each number is unique
+    do 
+    {
+      newNum = Math.floor(Math.random() * maxValue) + minValue;
+    } while(weightsArray.includes(newNum));
+
     weightsArray.push(newNum);
+
   }
 
   return weightsArray;
@@ -528,6 +538,46 @@ function getBubbleSortMoves(weightsArray){
   console.log("Bubble sort result " + weightsArray);
   // console.log("Bubble sort's moves: " + algorithmSteps);
   return algorithmSteps;
+}
+
+function getInsertionSortMoves(weightsArray){
+  // stores the list of each step taken in the algorithm
+  let algorithmSteps = [];
+
+  console.log(weightsArray);
+
+  for(let i=0; i<weightsArray.length; i++)
+  {
+    for(j=i; j>0; j--)
+    {
+      if(!isGreaterThanPrevious(weightsArray, j))
+      {
+        //Swap
+        swapWithPrevious(weightsArray, j);
+      }
+      else
+      {
+        break;
+      }
+    }
+  }
+
+  console.log(weightsArray);
+}
+
+// Swap the supplied array's index with it's previous index
+function swapWithPrevious(weightsList, index)
+{
+  //TODO: catch out of bounds error
+  let temp = weightsList[index];
+  weightsList[index] = weightsList[index-1];
+  weightsList = temp;
+}
+
+// Returns true if the index previous to the supplied index is of a greater weight
+function isGreaterThanPrevious(weightsList, index)
+{
+  return(weightsList[index-1] < weightsList[index])
 }
 
 function getSelectionSortMoves(weightsArray){
