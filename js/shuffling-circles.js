@@ -550,15 +550,29 @@ function getInsertionSortMoves(weightsArray){
   {
     for(j=i; j>0; j--)
     {
+      // Algorithm Step object 
+      // console.log("index B : " + int(j+1));
+      let algorithmStep = {
+        indexA: j,
+        indexB: j+1,
+        swapRequired: false
+      }
+
       if(!isGreaterThanPrevious(weightsArray, j))
       {
         //Swap
         swapWithPrevious(weightsArray, j);
+        // Set algorithm step to show the swap
+        algorithmStep.swapRequired = true;
       }
       else
       {
         break;
       }
+
+      // push onto algorithm steps
+      algorithmSteps.push(algorithmStep);
+
     }
   }
 
@@ -571,7 +585,7 @@ function swapWithPrevious(weightsList, index)
   //TODO: catch out of bounds error
   let temp = weightsList[index];
   weightsList[index] = weightsList[index-1];
-  weightsList = temp;
+  weightsList[index-1] = temp;
 }
 
 // Returns true if the index previous to the supplied index is of a greater weight
